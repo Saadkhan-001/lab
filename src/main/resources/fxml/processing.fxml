@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.web.HTMLEditor?>
+
+<VBox spacing="0" stylesheets="@/css/style.css"
+      style="-fx-background-color: #F9F2F2; -fx-padding: 15 20 10 20;"
+      VBox.vgrow="ALWAYS"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.lab.lms.controllers.ProcessingController">
+
+    <!-- Page Header -->
+    <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 0 0 12 0;">
+        <VBox spacing="2">
+            <Label text="Diagnostics Processing &amp; Analysis" styleClass="page-title"/>
+            <Label text="Execute clinical analysis protocols and record validated result parameters"
+                   style="-fx-text-fill: #5D4037; -fx-font-size: 12;"/>
+        </VBox>
+    </HBox>
+
+    <!-- Two-Column Layout (Responsive) -->
+    <GridPane vgap="20" hgap="20" VBox.vgrow="ALWAYS">
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="35.0"/>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="65.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints vgrow="ALWAYS"/>
+        </rowConstraints>
+
+        <!-- LEFT: Sample Queue Card -->
+        <VBox spacing="18" styleClass="card" GridPane.columnIndex="0">
+
+            <HBox spacing="10">
+                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                    <Label text="SEARCH PATIENT" styleClass="section-title" style="-fx-font-size: 8;"/>
+                    <TextField fx:id="patientSearchField" promptText="Name/ID/Phone" maxWidth="Infinity" onAction="#handlePatientSearch"/>
+                </VBox>
+                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                    <Label text="QUICK SELECT" styleClass="section-title" style="-fx-font-size: 8;"/>
+                    <ComboBox fx:id="recentPatientCombo" promptText="Select Recent" maxWidth="Infinity" onAction="#handleRecentSelectPat"/>
+                </VBox>
+            </HBox>
+
+            <!-- Selected Patient Feedback -->
+            <Label fx:id="patientDetailsLabel" text="SYSTEM READY — AWAITING SELECTION" 
+                   style="-fx-text-fill: #961111; -fx-font-weight: bold; -fx-font-size: 11;"/>
+
+            <Separator/>
+
+
+            <Label text="ALLOCATED DIAGNOSTIC TESTS" styleClass="section-title"/>
+            <TableView fx:id="testsToProcessTable" VBox.vgrow="ALWAYS" editable="true">
+                <columns>
+                    <TableColumn fx:id="colSelect"      text="SEL"       prefWidth="45"  editable="true"
+                                 style="-fx-alignment: CENTER;"/>
+                    <TableColumn fx:id="colTestName"    text="TEST PROTOCOL" prefWidth="200"/>
+                    <TableColumn fx:id="colStatus"      text="STATUS"    prefWidth="130"
+                                 style="-fx-alignment: CENTER;"/>
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                </columnResizePolicy>
+                <placeholder>
+                    <Label text="No records available." style="-fx-text-fill: #90A4AE; -fx-font-size: 13;"/>
+                </placeholder>
+            </TableView>
+
+            <HBox spacing="10" maxWidth="Infinity">
+                <Button text="🔍 PREVIEW REPORT" onAction="#handlePreviewReport"
+                        maxWidth="Infinity" HBox.hgrow="ALWAYS" style="-fx-background-color: #607D8B; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8; -fx-cursor: hand;"/>
+                <Button text="🖨️ PRINT SELECTED REPORTS" onAction="#handlePrintSelected"
+                        maxWidth="Infinity" HBox.hgrow="ALWAYS" style="-fx-background-color: #961111; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8; -fx-cursor: hand;"/>
+            </HBox>
+        </VBox>
+
+        <!-- RIGHT: Results Entry Card -->
+        <VBox spacing="18" styleClass="card" GridPane.columnIndex="1" minHeight="700">
+
+            <!-- Header with active test indicator -->
+            <HBox alignment="CENTER_LEFT" spacing="15"
+                  style="-fx-background-color: #961111; -fx-padding: 12 16;">
+                <VBox spacing="3">
+                    <Label text="ACTIVE DIAGNOSTIC PROTOCOL" styleClass="section-title" style="-fx-text-fill: white; -fx-opacity: 0.8; -fx-font-size: 9;"/>
+                    <Label fx:id="selectedTestName" text="SELECT PROTOCOL FROM QUEUE"
+                           style="-fx-font-weight: bold; -fx-font-size: 16; -fx-text-fill: white;"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="✏ EDIT TEST DETAIL" onAction="#handleEditPatientInfo"
+                        style="-fx-background-color: transparent; -fx-border-color: white; -fx-border-radius: 4; -fx-text-fill: white; -fx-font-size: 11px; -fx-font-weight: bold; -fx-padding: 5 12; -fx-cursor: hand;" />
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="PARAMETER VALIDATION" styleClass="section-title" HBox.hgrow="ALWAYS"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="📜 VIEW HISTORY" onAction="#handleViewHistory" styleClass="button-sm-teal"/>
+                <Button fx:id="btnAddOpinion" text="+ ADD OPINION" onAction="#handleAddOpinion" styleClass="button-sm-teal"/>
+                <Button fx:id="btnAddLabComment" text="+ ADD LAB COMMENT" onAction="#handleAddLabComment" 
+                        visible="false" managed="false" styleClass="button-sm-teal"/>
+                <Button fx:id="btnAddCultureResult" text="+ ADD RESULT" onAction="#handleToggleCultureResult" 
+                        visible="false" managed="false" styleClass="button-sm-teal"/>
+                <Button fx:id="btnAddParam" text="+ ADD PARAMETER" onAction="#handleAddCustomParameter" styleClass="button-sm-teal"/>
+                <Button fx:id="btnEditTest" text="✏ EDIT TEST" onAction="#handleEditTestGlobal" 
+                        visible="false" managed="false" styleClass="button-sm-red"/>
+            </HBox>
+
+            <!-- Culture Specific Options (Master-Detail Entry) -->
+            <VBox fx:id="cultureOptionsBox" spacing="12" visible="false" managed="false" 
+                   style="-fx-background-color: #FFFFFF; -fx-padding: 12; -fx-border-color: #CFD8DC; -fx-border-radius: 5;">
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                        <Label text="STEP 1: GROWTH STATUS / INCUBATION" styleClass="section-title" style="-fx-font-size: 8; -fx-text-fill: #961111;"/>
+                        <ComboBox fx:id="growthStatusCombo" promptText="Select Status" maxWidth="Infinity" onAction="#handleGrowthStatusChange"
+                                  style="-fx-font-weight: bold; -fx-border-color: #961111;"/>
+                    </VBox>
+                    <VBox fx:id="organismSelectBox" spacing="5" HBox.hgrow="ALWAYS">
+                        <Label text="STEP 2: IDENTIFIED ORGANISM / BACTERIA" styleClass="section-title" style="-fx-font-size: 8; -fx-text-fill: #961111;"/>
+                        <TextField fx:id="bacteriaSelectCombo" promptText="Enter Bacteria Name" maxWidth="Infinity" 
+                                  style="-fx-font-weight: bold;"/>
+                    </VBox>
+                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                        <Label text="STEP 3: CULTURE TYPE (SPECIMEN)" styleClass="section-title" style="-fx-font-size: 8; -fx-text-fill: #961111;"/>
+                        <TextField fx:id="cultureTypeSelectCombo" promptText="Enter Specimen" maxWidth="Infinity" 
+                                  style="-fx-font-weight: bold;"/>
+                    </VBox>
+                </HBox>
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                        <Label text="SPECIMEN TYPE" styleClass="section-title" style="-fx-font-size: 8;"/>
+                        <TextField fx:id="cultureSpecimenField" promptText="e.g. Urine, Blood" maxWidth="Infinity"/>
+                    </VBox>
+                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                        <Label text="CULTURE DURATION (DAYS)" styleClass="section-title" style="-fx-font-size: 8;"/>
+                        <TextField fx:id="cultureGrowthDaysField" promptText="e.g. 5" maxWidth="Infinity" text="5"/>
+                    </VBox>
+                </HBox>
+                <VBox spacing="5">
+                    <Label fx:id="cultureGrowthLabel" text="STEP 4: CULTURE FINDINGS (GROWTH OBSERVATION)" styleClass="section-title" style="-fx-font-size: 8;"/>
+                    <TextArea fx:id="cultureGrowthField" promptText="Describe findings..." 
+                              prefHeight="50" wrapText="true"/>
+                </VBox>
+                <HBox alignment="CENTER_RIGHT">
+                     <Button text="+ SAVE ORGANISM" onAction="#handleSaveOrganismToQueue" 
+                             style="-fx-background-color: #961111; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 4 15; -fx-cursor: hand;"/>
+                </HBox>
+                <Separator/>
+                <Label fx:id="sensitivityTableLabel" text="STEP 4: RECORD DRUG SENSITIVITY (S, R, I)" styleClass="section-title" style="-fx-font-size: 8; -fx-text-fill: #263238;"/>
+            </VBox>
+
+            <TableView fx:id="resultsEntryTable" VBox.vgrow="ALWAYS" editable="true">
+                <columns>
+                    <TableColumn fx:id="colParamName"  text="PARAMETER"    prefWidth="180" editable="false"/>
+                    <TableColumn fx:id="colParamUnit"  text="UNIT"         prefWidth="100" editable="false"
+                                 style="-fx-alignment: CENTER;"/>
+                    <TableColumn fx:id="colParamRange" text="REFERENCE RANGE" prefWidth="150" editable="false"
+                                 style="-fx-alignment: CENTER;"/>
+                    <TableColumn fx:id="colParamValue" text="RESULT"     prefWidth="140" editable="true"
+                                 style="-fx-alignment: CENTER; -fx-text-fill: #1A0A0A; -fx-font-weight: bold;"/>
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                </columnResizePolicy>
+                <placeholder>
+                    <Label text="Select active protocol to begin data entry."
+                           style="-fx-text-fill: #90A4AE; -fx-font-size: 13;"/>
+                </placeholder>
+            </TableView>
+
+            <!-- Test Comments/Notes -->
+            <VBox fx:id="opinionBox" spacing="8" visible="false" managed="false">
+                <Label fx:id="testCommentsLabel" text="CLINICAL OPINION / INTERPRETATION" styleClass="section-title" style="-fx-font-size: 10;"/>
+                <TextArea fx:id="testCommentsArea" style="-fx-border-color: #961111; -fx-background-color: white;" prefHeight="65" promptText="Enter clinical opinion/interpretation..." wrapText="true"/>
+            </VBox>
+            
+            <VBox fx:id="labCommentBox" spacing="8" visible="false" managed="false">
+                <Label fx:id="testLabCommentsLabel" text="LABORATORY COMMENTS" styleClass="section-title" style="-fx-font-size: 10;"/>
+                <TextArea fx:id="testLabCommentsArea" style="-fx-border-color: #CFD8DC; -fx-background-color: white;" prefHeight="65" promptText="Enter laboratory technical comments..." wrapText="true"/>
+            </VBox>
+
+            <!-- Clinical Result Images -->
+            <VBox spacing="10">
+                <HBox alignment="CENTER_LEFT" spacing="15">
+                    <Label text="CLINICAL IMAGING &amp; ATTACHMENTS" styleClass="section-title" style="-fx-font-size: 9;"/>
+                    <Button text="UPLOAD ATTACHMENT" onAction="#handleUploadResultImage" 
+                            style="-fx-background-color: #ECEFF1; -fx-text-fill: #961111; -fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 4 12; -fx-cursor: hand;"/>
+                </HBox>
+                <FlowPane fx:id="resultImageGallery" hgap="10" vgap="10" style="-fx-padding: 5 0;">
+                    <!-- Dynamically populated with thumbnails -->
+                </FlowPane>
+            </VBox>
+
+            <Separator/>
+
+            <HBox spacing="12" alignment="CENTER_RIGHT">
+                <Button fx:id="btnCommit" text="COMMIT RESULTS"     onAction="#handleSaveResult"
+                        styleClass="button-success" prefWidth="200" prefHeight="45"/>
+                <Button fx:id="btnNext" text="PROCEED TO REVIEW" onAction="#handleNext"
+                        styleClass="button-teal"    prefWidth="180" prefHeight="45"/>
+            </HBox>
+        </VBox>
+    </GridPane>
+</VBox>
+
+

@@ -1,0 +1,14 @@
+{
+  "templateName": "Saadkhan",
+  "headerHeight": "120",
+  "footerHeight": "80",
+  "pathologistDetails": "",
+  "doctorsFooter": "",
+  "reportNotes": "",
+  "assets": {
+    "header": "header.jpg",
+    "footer": "footer.jpg",
+    "watermark": "watermark.jpg",
+    "signature": "signature.jpg"
+  }
+}

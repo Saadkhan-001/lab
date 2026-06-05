@@ -1,0 +1,270 @@
+﻿package com.lab.lms.controllers;
+
+import javafx.scene.control.ChoiceBox;
+import javafx.beans.property.SimpleStringProperty;
+
+import com.lab.lms.dao.DatabaseManager;
+import com.lab.lms.models.*;
+import com.lab.lms.services.BackupService;
+import com.lab.lms.services.ReportGenerator;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.web.HTMLEditor;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.collections.transformation.FilteredList;
+import java.io.File;
+import java.util.List;
+import java.sql.*;
+import java.util.ArrayList;
+
+public class AdminController {
+
+    @FXML
+    private TextField nameField;
+    @FXML
+    private TextField numericCodeField;
+    @FXML
+    private TextField alphaCodeField;
+    @FXML
+    private ComboBox<String> categoryField;
+    @FXML
+    private TextField priceField;
+    @FXML
+    private TextField resultTimeField;
+    @FXML
+    private ComboBox<String> tatUnitBox;
+    @FXML
+    private HTMLEditor testNotesArea;
+    @FXML
+    private TextField specimenField;
+    @FXML
+    private ComboBox<String> testClassBox;
+    @FXML
+    private CheckBox isSpecialCheck;
+    @FXML
+    private CheckBox isMicroscopicCheck;
+    @FXML
+    private CheckBox isCultureCheck;
+    @FXML
+    private Label testImagePathLabel;
+
+    @FXML
+    private TextField adminUsernameField;
+    @FXML
+    private PasswordField adminPasswordField;
+    @FXML
+    private PasswordField adminConfirmPasswordField;
+
+    @FXML
+    private TextField paramNameField;
+    @FXML
+    private TextField paramUnitField;
+    @FXML
+    private TextField paramMinField;
+    @FXML
+    private TextField paramMaxField;
+    @FXML
+    private TextField paramMinKidsField;
+    @FXML
+    private TextField paramMaxKidsField;
+    @FXML
+    private TextField paramMinMaleField;
+    @FXML
+    private TextField paramMaxMaleField;
+    @FXML
+    private TextField paramMinFemaleField;
+    @FXML
+    private TextField paramMaxFemaleField;
+    @FXML
+    private VBox unitInputBox, minInputBox, maxInputBox, categoryInputBox;
+    @FXML
+    private VBox kidsRangeBox, maleRangeBox, femaleRangeBox;
+    @FXML
+    private VBox containerGeneralRange, containerKidsRange, containerMaleRange, containerFemaleRange;
+    
+    private java.util.List<TextField> extraMinFields = new java.util.ArrayList<>();
+    private java.util.List<TextField> extraMaxFields = new java.util.ArrayList<>();
+    private java.util.List<TextField> extraMinMaleFields = new java.util.ArrayList<>();
+    private java.util.List<TextField> extraMaxMaleFields = new java.util.ArrayList<>();
+    private java.util.List<TextField> extraMinFemaleFields = new java.util.ArrayList<>();
+    private java.util.List<TextField> extraMaxFemaleFields = new java.util.ArrayList<>();
+    private java.util.List<TextField> extraMinKidsFields = new java.util.ArrayList<>();
+    private java.util.List<TextField> extraMaxKidsFields = new java.util.ArrayList<>();
+    @FXML
+    private Label minLabel, paramNameLabel, paramCategoryLabel;
+    @FXML
+    private VBox referenceValueBox;
+    @FXML
+    private ComboBox<String> paramCategoryField, cultureTypeField;
+    @FXML
+    private VBox cultureTypeInputBox;
+    @FXML
+    private TextArea secondaryRangesArea;
+
+    @FXML
+    private TableView<TestParameter> paramTable;
+    @FXML
+    private Button btnAddParameter;
+    @FXML
+    private TableColumn<TestParameter, Boolean> colParamSelect;
+    @FXML
+    private TableColumn<TestParameter, String> colParamName;
+    @FXML
+    private TableColumn<TestParameter, String> colParamUnit;
+    @FXML
+    private TableColumn<TestParameter, String> colParamCategory;
+    @FXML
+    private TableColumn<TestParameter, String> colParamRange;
+
+    private TestParameter selectedParameter;
+
+    @FXML
+    private TableView<Test> testTable;
+    @FXML
+    private TableColumn<Test, String> colNumericCode;
+    @FXML
+    private TableColumn<Test, String> colAlphaCode;
+    @FXML
+    private TableColumn<Test, String> colName;
+    @FXML
+    private TableColumn<Test, Double> colPrice;
+    @FXML
+    private TableColumn<Test, String> colTAT;
+    @FXML
+    private TableColumn<Test, Void> colAction;
+
+    @FXML
+    private Label backupPathLabel;
+    @FXML
+    private Label templatePathLabel;
+    @FXML
+    private Label signaturePathLabel;
+    @FXML
+    private Label logoPathLabel;
+    @FXML
+    private Label headerPathLabel;
+    @FXML
+    private Label watermarkPathLabel;
+    @FXML
+    private Label footerPathLabel;
+
+    @FXML
+    private TextArea pathologistDetailsArea;
+    @FXML
+    private TextArea doctorsFooterArea;
+    @FXML
+    private TextArea reportNoteArea;
+
+    @FXML
+    private TextField labNameField;
+    @FXML
+    private TextField labContactField;
+    @FXML
+    private TextArea labAddressArea;
+    @FXML
+    private TextArea receiptPoliciesArea;
+    @FXML
+    private TextField labEmailField, labWebsiteField, labTaglineField;
+
+    @FXML
+    private TextField staffNameField;
+    @FXML
+    private TextArea staffAddressField;
+    @FXML
+    private TextField staffPhoneField;
+    @FXML
+    private ComboBox<String> staffGenderBox;
+    @FXML
+    private DatePicker staffDobPicker;
+    @FXML
+    private TextField staffQualField;
+    @FXML
+    private PasswordField staffPassField;
+    @FXML
+    private TextField staffDesignationField;
+    @FXML
+    private javafx.scene.image.ImageView staffImageView;
+    @FXML
+    private Label staffImagePathLabel;
+
+    @FXML
+    private TableView<Staff> staffTable;
+    @FXML
+    private TableColumn<Staff, String> colStaffId;
+    @FXML
+    private TableColumn<Staff, String> colStaffName;
+    @FXML
+    private TableColumn<Staff, String> colStaffDesignation;
+    @FXML
+    private TableColumn<Staff, String> colStaffGender;
+    @FXML
+    private TableColumn<Staff, String> colStaffAddress;
+    @FXML
+    private TableColumn<Staff, String> colStaffQual;
+    @FXML
+    private TableColumn<Staff, String> colStaffPhone;
+    @FXML
+    private TableColumn<Staff, String> colStaffDob;
+    @FXML
+    private TableColumn<Staff, String> colStaffPass;
+    @FXML
+    private TableColumn<Staff, Void> colStaffAction;
+
+    @FXML
+    private CheckBox permDashboard, permRegistration, permProcessing, permBilling, permInventory, permAuthorization, permConfiguration, permTestDeletion;
+    @FXML
+    private CheckBox toggleMultiDeviceMode, toggleInventoryManagement;
+    
+    // Inventory System
+    @FXML private TextField inventoryItemNameField, inventoryQtyField, inventoryUnitField, inventoryMinLevelField, inventorySearchField;
+    @FXML private ComboBox<String> inventoryCategoryField;
+    @FXML private TableView<InventoryItem> inventoryTable;
+    @FXML private TableColumn<InventoryItem, String> colInvName, colInvUnit, colInvStatus, colInvCategory;
+    @FXML private TableColumn<InventoryItem, Double> colInvStock, colInvMinLevel;
+    
+    // Test-Inventory Linking
+    @FXML private ComboBox<InventoryItem> testInventoryItemBox;
+    @FXML private TextField testInventoryQtyField;
+    @FXML private TableView<TestInventoryLink> linkedInventoryTable;
+    @FXML private TableColumn<TestInventoryLink, String> colLinkedInvName, colLinkedInvAction;
+    @FXML private TableColumn<TestInventoryLink, Double> colLinkedInvQty;
+
+    @FXML
+    private TabPane adminTabPane;
+    @FXML
+    private Tab tabTests, tabStaff, tabOrganization, tabInventory, tabIntegrity;
+    @FXML
+    private TextField testSearchField;
+
+    private boolean isStaffLoaded = false;
+    private boolean isInventorySystemLoaded = false;
+    private boolean isOrganizationLoaded = false;
+    private boolean isIntegrityLoaded = false;
+    private boolean isMicrobiologyLoaded = false;
+
+    private ObservableList<TestParameter> tempParameters = FXCollections.observableArrayList();
+    private ObservableList<Staff> staffList = FXCollections.observableArrayList();
+    private ObservableList<Test> masterTestList = FXCollections.observableArrayList();
+    private ObservableList<InventoryItem> inventoryItems = FXCollections.observableArrayList();
+    private ObservableList<TestInventoryLink> linkedInventoryLinks = FXCollections.observableArrayList();
+    private Test selectedTest;
+    private InventoryItem selectedInventoryItem;
+    private Staff selectedStaff;
+    private FilteredList<Test> filteredTests;
+    @FXML
+    private ChoiceBox<String> templateSelector;
+    @FXML
+    private ChoiceBox<String> cashbookPrinterSelector;
+    @FXML
+    private Button btnAddInventory;
+    private int nextSelectionOrder = 1;
+    private String currentStaffPicPath = "";
+    private ObservableList<String> standardOrganisms = FXCollections.observableArrayList();
+
+    @FXML

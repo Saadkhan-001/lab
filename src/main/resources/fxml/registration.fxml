@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="0" stylesheets="@/css/style.css"
+      style="-fx-background-color: #F9F2F2; -fx-padding: 15 20 10 20;"
+      VBox.vgrow="ALWAYS"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.lab.lms.controllers.PatientRegistrationController">
+
+    <!-- Page Header -->
+    <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 0 0 12 0;">
+        <VBox spacing="2">
+            <Label text="Patient Registration Intake" styleClass="page-title"/>
+            <Label text="Assign unique system identity and record demographic data"
+                   style="-fx-text-fill: #5D4037; -fx-font-size: 12;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="statusLabel" style="-fx-font-weight: bold; -fx-font-size: 13; -fx-text-fill: #961111;"/>
+    </HBox>
+
+    <!-- Main Card -->
+    <VBox spacing="15" styleClass="card">
+
+        <!-- Search Existing Patient Bar -->
+        <VBox spacing="6" style="-fx-padding: 0 0 10 0;">
+            <Label text="SEARCH EXISTING PATIENT" styleClass="section-title"
+                   style="-fx-font-size: 11; -fx-text-fill: #961111;"/>
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <TextField fx:id="existingPatientSearch" promptText="🔍 Type patient name, MR number, or phone to search..."
+                           HBox.hgrow="ALWAYS"
+                           style="-fx-font-size: 12; -fx-padding: 10 12; -fx-background-color: white; -fx-border-color: #CFD8DC; -fx-border-radius: 4; -fx-background-radius: 4;"/>
+                <Label fx:id="searchResultLabel" text=""
+                       style="-fx-text-fill: #546E7A; -fx-font-size: 11; -fx-font-style: italic;"/>
+            </HBox>
+        </VBox>
+
+        <Separator/>
+
+        <!-- Section 1: Identity & Demographics (Responsive) -->
+        <VBox spacing="10">
+            <Label text="1. SYSTEM IDENTITY &amp; CORE DEMOGRAPHICS" styleClass="section-title"/>
+            
+            <GridPane vgap="15" hgap="20">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="ALWAYS" percentWidth="25"/>
+                    <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                    <ColumnConstraints hgrow="ALWAYS" percentWidth="25"/>
+                </columnConstraints>
+
+                <!-- Row 0 -->
+                <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label text="MR NUMBER" styleClass="section-title" style="-fx-font-size: 9;"/>
+                    <ComboBox fx:id="patientIdCombo" editable="true"
+                              promptText="Search ID/Name..."
+                              maxWidth="Infinity"
+                              style="-fx-font-weight: bold;"/>
+                </VBox>
+                <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <Label text="FULL LEGAL NAME  *" styleClass="section-title" style="-fx-font-size: 9;"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <ComboBox fx:id="titleCombo" prefWidth="80" minWidth="80" promptText="Title" editable="true"/>
+                        <TextField fx:id="nameField" promptText="Enter full name" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                </VBox>
+                <VBox spacing="6" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                    <Label text="AGE (YRS / MNTHS / DAYS) *" styleClass="section-title" style="-fx-font-size: 9;"/>
+                    <HBox styleClass="age-input-container">
+                        <TextField fx:id="ageField" promptText="YY" prefWidth="45" styleClass="age-field-minimal"/>
+                        <Label text="Y" styleClass="age-label-minimal"/>
+                        
+                        <Separator orientation="VERTICAL" prefHeight="20" style="-fx-padding: 5 0; -fx-opacity: 0.3;"/>
+                        
+                        <TextField fx:id="ageMonthField" promptText="MM" prefWidth="45" styleClass="age-field-minimal"/>
+                        <Label text="M" styleClass="age-label-minimal"/>
+                        
+                        <Separator orientation="VERTICAL" prefHeight="20" style="-fx-padding: 5 0; -fx-opacity: 0.3;"/>
+                        
+                        <TextField fx:id="ageDayField" promptText="DD" prefWidth="45" styleClass="age-field-minimal"/>
+                        <Label text="D" styleClass="age-label-minimal"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Row 1 -->
+                <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <Label text="GENDER BIOLOGICAL" styleClass="section-title" style="-fx-font-size: 9;"/>
+                    <ComboBox fx:id="genderCombo" maxWidth="Infinity"/>
+                </VBox>
+                <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <Label text="CONTACT PRIMARY" styleClass="section-title" style="-fx-font-size: 9;"/>
+                    <TextField fx:id="phoneField" promptText="Primary contact number" maxWidth="Infinity"/>
+                </VBox>
+                <VBox spacing="6" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                    <Label text="WHATSAPP (RESULT DELIVERY)" styleClass="section-title" style="-fx-font-size: 9;"/>
+                    <TextField fx:id="whatsappField" promptText="Automated delivery number" maxWidth="Infinity"/>
+                </VBox>
+            </GridPane>
+
+            <GridPane vgap="15" hgap="20">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="ALWAYS" percentWidth="20"/>
+                    <ColumnConstraints hgrow="ALWAYS" percentWidth="20"/>
+                    <ColumnConstraints hgrow="ALWAYS" percentWidth="25"/>
+                    <ColumnConstraints hgrow="ALWAYS" percentWidth="35"/>
+                </columnConstraints>
+
+                <!-- Row 0 -->
+                <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label text="REGISTRATION DATE" styleClass="section-title" style="-fx-font-size: 9;"/>
+                    <DatePicker fx:id="regDatePicker" maxWidth="Infinity"/>
+                </VBox>
+                <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <Label text="REGISTRATION TIME" styleClass="section-title" style="-fx-font-size: 9;"/>
+                    <TextField fx:id="regTimeField" promptText="HH:mm:ss" maxWidth="Infinity"/>
+                </VBox>
+                <VBox spacing="6" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                    <Label text="REFERRING PHYSICIAN" styleClass="section-title" style="-fx-font-size: 9;"/>
+                    <TextField fx:id="referredDoctorField" promptText="Hospital or clinic" maxWidth="Infinity"/>
+                </VBox>
+                <VBox spacing="6" GridPane.columnIndex="3" GridPane.rowIndex="0">
+                    <Label text="RESIDENTIAL ADDRESS" styleClass="section-title" style="-fx-font-size: 9;"/>
+                    <TextField fx:id="addressArea" promptText="Full address details" maxWidth="Infinity"/>
+                </VBox>
+            </GridPane>
+        </VBox>
+
+        <Separator/>
+
+        <!-- Section 2: Diagnostic Selection (Responsive) -->
+        <VBox spacing="10">
+            <Label text="2. DIRECT TEST SELECTION &amp; QUEUING" styleClass="section-title"/>
+            <GridPane vgap="15" hgap="20">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="ALWAYS" percentWidth="60"/>
+                    <ColumnConstraints hgrow="ALWAYS" percentWidth="40"/>
+                </columnConstraints>
+
+                <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label text="SEARCH TEST CATALOGUE" styleClass="section-title" style="-fx-font-size: 9;"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <ComboBox fx:id="testCombo" HBox.hgrow="ALWAYS" maxWidth="Infinity"
+                                  promptText="Select diagnostic test..."/>
+                        <Button text="ADD TEST" onAction="#handleAddTest" styleClass="button-primary" style="-fx-font-size: 11;"/>
+                    </HBox>
+                </VBox>
+                <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <Label text="SELECTED DIAGNOSTIC WORK LIST" styleClass="section-title" style="-fx-font-size: 9;"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <TextField fx:id="selectedTestsField" editable="false" promptText="Added tests..." HBox.hgrow="ALWAYS"/>
+                        <Button text="CLEAR" onAction="#handleRemoveTest" styleClass="button-secondary" style="-fx-font-size: 11;"/>
+                    </HBox>
+                </VBox>
+            </GridPane>
+        </VBox>
+
+        <Separator/>
+
+        <!-- Actions -->
+        <HBox fx:id="actionButtonsBox" spacing="12" alignment="CENTER_RIGHT">
+            <Button fx:id="btnEmptyTemplate" text="🖨️ EMPTY TEMPLATE" onAction="#handlePrintEmptyTemplate" styleClass="button-secondary" style="-fx-background-color: #607D8B; -fx-text-fill: white; -fx-font-weight: bold;"/>
+            <Button fx:id="btnResetFields" text="RESET FIELDS"     onAction="#handleClear"   styleClass="button-secondary"/>
+            <Button fx:id="btnCommitRegistration" text="COMMIT REGISTRATION" onAction="#handleSave"  styleClass="button-primary" prefWidth="220" prefHeight="42"/>
+            <Button fx:id="btnProceedTests" text="PROCEED TO TESTS"     onAction="#handleNext"   styleClass="button-teal"    prefWidth="200" prefHeight="42"/>
+            <Button fx:id="btnConfirmEdit" text="CONFIRM EDIT" onAction="#handleConfirmEdit" visible="false" managed="false" styleClass="button-success" prefWidth="250" prefHeight="42"/>
+        </HBox>
+    </VBox>
+</VBox>
+
+

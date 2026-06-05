@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Template Generator - Live Edition</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eef2f5;
+            color: #333;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Editor Section */
+        .editor-section {
+            width: 45%;
+            background: #fff;
+            overflow-y: auto;
+            padding: 20px 30px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        /* Preview Section */
+        .preview-section {
+            width: 55%;
+            background: #546E7A;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 { color: #961111; text-align: center; border-bottom: 2px solid #961111; padding-bottom: 10px; font-size: 1.5em; }
+        .section-title { color: #961111; font-size: 1.1em; margin-top: 25px; margin-bottom: 10px; font-weight: bold; }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.85em; color: #555; }
+        
+        .input-group { display: flex; }
+        .input-group input { flex: 1; border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: 0;}
+        .input-group select { 
+            background: #eee; border: 1px solid #ccc; border-top-right-radius: 4px; border-bottom-right-radius: 4px; padding: 0 10px; font-weight: bold;
+        }
+
+        input[type="text"], input[type="number"], textarea, select {
+            width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit; font-size: 0.9em;
+        }
+        input[type="file"] { border: 1px solid #ccc; padding: 5px; border-radius: 4px; width: 100%; box-sizing: border-box; font-size: 0.85em; }
+        
+        textarea { resize: vertical; }
+        .row { display: flex; gap: 15px; }
+        .col { flex: 1; }
+        
+        .submit-btn { background-color: #961111; color: white; padding: 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; font-weight: bold; width: 100%; margin-top: 20px; transition: background 0.3s; }
+        .submit-btn:hover { background-color: #7b0e0e; }
+        
+        .print-btn { background-color: #546E7A; color: white; padding: 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; font-weight: bold; width: 100%; margin-top: 10px; transition: background 0.3s; }
+        .print-btn:hover { background-color: #37474F; }
+        
+        .action-btn { background-color: #0277BD; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9em; font-weight: bold; transition: background 0.3s; margin-right: 10px; }
+        .action-btn:hover { background-color: #01579B; }
+
+        .info-text { font-size: 0.8em; color: #78909c; margin-bottom: 8px; }
+
+        /* Actual A4 Page Live Preview */
+        .a4-page-wrapper {
+            width: 21cm;
+            transform-origin: top center;
+            transform: scale(0.65);
+            margin-bottom: -10cm; /* Offset scaled height so it doesnt overflow excessively */
+        }
+
+        .a4-page {
+            width: 21cm;
+            min-height: 29.7cm;
+            background: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        .page-header { background: #fafafa; width: 100%; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .page-header img { width: 100%; height: 100%; object-fit: contain; }
+        .page-header-placeholder { position: absolute; color: #999; font-size: 12px; font-weight: bold; }
+
+        .page-body { flex: 1; padding: 0.5cm 1cm; position: relative; font-family: Arial, sans-serif; font-size: 12px; }
+        
+        .page-footer { background: #fafafa; width: 100%; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .page-footer img { width: 100%; height: 100%; object-fit: contain; }
+        .page-footer-placeholder { position: absolute; color: #999; font-size: 12px; font-weight: bold; }
+
+        .watermark-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; outline: none; pointer-events: none; z-index: 0; opacity: 0.15; display: flex; align-items: center; justify-content: center; }
+        .watermark-layer img { max-width: 80%; max-height: 80%; object-fit: contain; }
+
+        .content-layer { position: relative; z-index: 1; }
+
+        /* Print Override */
+        @media print {
+            body { background: white; display: block; overflow: visible; }
+            .editor-section { display: none !important; }
+            .preview-section { width: 100%; padding: 0; background: white; display: block; overflow: visible; }
+            .preview-section > div:first-child { display: none !important; } /* Hide the toolbar in print */
+            .a4-page-wrapper { transform: scale(1); margin: 0; width: auto; }
+            .a4-page { box-shadow: none; min-height: auto; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="editor-section">
+    <h1>Clinical Template Engine</h1>
+    <p class="info-text" style="text-align: center;">Live updates. See precisely what prints.</p>
+    <div style="margin-top: 15px; background: rgba(150,17,17,0.1); padding: 10px; border-radius: 5px; display: flex; align-items: center; justify-content: center; gap: 15px; border: 1px dashed #961111;">
+        <span style="font-weight: bold; font-size: 0.85em; color: #961111;">RE-EDIT TEMPLATE:</span>
+        <input type="file" id="importZipInput" accept=".zip" style="display: none;">
+        <button type="button" onclick="document.getElementById('importZipInput').click()" style="background: #961111; color: #fff; padding: 6px 15px; border: none; border-radius: 4px; font-weight: bold; font-size: 0.85em; cursor: pointer;">📂 LOAD EXISTING ZIP</button>
+    </div>
+
+    <form id="templateForm">
+        
+        <div class="section-title">1. Template Identity</div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="templateName">Template Name</label>
+                    <input type="text" id="templateName" value="Modern Standard Layout" required>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="templatePreset">Quick Template Preset</label>
+                    <select id="templatePreset" onchange="loadPreset()">
+                        <option value="modern_standard" selected>Modern Standard Layout</option>
+                        <option value="minimalist">Minimalist Clean Design</option>
+                        <option value="executive">Executive Professional Layout</option>
+                        <option value="compact">Compact / Dense Layout</option>
+                        <option value="custom">Custom HTML (Manual)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">2. Branding & Dimensions</div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="headerHeight">Header Height</label>
+                    <div class="input-group">
+                        <input type="number" id="headerHeight" value="3.5" step="0.1" required onchange="updatePreview()">
+                        <select id="headerUnit" onchange="updatePreview()">
+                            <option value="cm" selected>cm</option>
+                            <option value="px">px</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="footerHeight">Footer Height</label>
+                    <div class="input-group">
+                        <input type="number" id="footerHeight" value="2.5" step="0.1" required onchange="updatePreview()">
+                        <select id="footerUnit" onchange="updatePreview()">
+                            <option value="cm" selected>cm</option>
+                            <option value="px">px</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">3. Typography & Spacing</div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="baseFontSize">Report Base Font Size (px)</label>
+                    <input type="number" id="baseFontSize" value="11" min="6" max="24" onchange="updatePreview()">
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="pagePadding">Content Side Padding (cm)</label>
+                    <input type="number" id="pagePadding" value="1.0" step="0.1" onchange="updatePreview()">
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">4. Graphical Assets (Images limit: 2MB)</div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="headerImg">Report Header</label>
+                    <input type="file" id="headerImg" accept="image/png, image/jpeg">
+                </div>
+                <div class="form-group">
+                    <label for="watermarkImg">Watermark Logo</label>
+                    <input type="file" id="watermarkImg" accept="image/png, image/jpeg">
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="footerImg">Report Footer</label>
+                    <input type="file" id="footerImg" accept="image/png, image/jpeg">
+                </div>
+                <div class="form-group">
+                    <label for="signatureImg">Doctor's Signature</label>
+                    <input type="file" id="signatureImg" accept="image/png, image/jpeg">
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">4. Core Clinical Settings (Variables)</div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="pathologistDetails">Primary Pathologist Details</label>
+                    <textarea id="pathologistDetails" rows="3">Dr. Saad Khan&#10;Consultant Pathologist</textarea>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="doctorsFooter">Verification Footer (Split with '||')</label>
+                    <textarea id="doctorsFooter" rows="3">Verified by Dr. A || Validated by Dr. B</textarea>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="reportNotes">Clinical Methodology / Notes</label>
+            <textarea id="reportNotes" rows="2">Automated Chemiluminescence Protocol...</textarea>
+        </div>
+        <div class="row" style="background:#f4f4f4; padding:10px; border-radius:5px; border:1px solid #ddd; margin-bottom: 20px;">
+            <div class="col">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="enableQrCode" style="margin-bottom: 0; font-size: 0.9em; display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" id="enableQrCode" onchange="updatePreview()" style="width: auto; margin-right: 8px;"> 
+                        Enable Verification QR Code (Bottom Right)
+                    </label>
+                </div>
+            </div>
+            <div class="col" id="qrSettingsDiv" style="display:none;">
+                <div class="form-group">
+                    <label for="qrDataType">QR Code Data Type</label>
+                    <select id="qrDataType" onchange="updatePreview()">
+                        <option value="patient_details">Patient Details (Name, Age, Test)</option>
+                        <option value="lab_location">Lab Location (Address)</option>
+                        <option value="map_link">Google Map Link</option>
+                        <option value="admin_contact">Lab Admin Contact Number(s)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="qrPosition">QR Code Position</label>
+                    <select id="qrPosition" onchange="updatePreview()">
+                        <option value="bottom_right" selected>Bottom Right (Footer Area)</option>
+                        <option value="top_right">Top Right (Header Area)</option>
+                        <option value="top_left">Top Left (Header Area)</option>
+                        <option value="bottom_left">Bottom Left (Footer Area)</option>
+                    </select>
+                </div>
+                <div class="form-group" id="qrCustomDataDiv" style="display:none; margin-bottom: 0;">
+                    <label for="qrCustomData">Custom Data Payload</label>
+                    <input type="text" id="qrCustomData" placeholder="Enter map link or admin number...">
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">5. HTML Layout Structure</div>
+        <div class="form-group">
+            <label for="htmlContent">Base HTML Code (template.html)</label>
+            <textarea id="htmlContent" rows="12"><div style="text-align: center; margin-bottom: 20px;">
+    <h3>{{REPORT_TITLE}}</h3>
+</div>
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+    <tr>
+        <td><b>Patient:</b> {{PATIENT_NAME}}</td>
+        <td style="text-align: right;"><b>Case No:</b> {{PATIENT_ID}}</td>
+    </tr>
+    <tr>
+        <td><b>Age/Gender:</b> {{AGE}} / {{GENDER}}</td>
+        <td style="text-align: right;"><b>Date:</b> {{DATE}}</td>
+    </tr>
+</table>
+<hr>
+{{TEST_TABLE}}
+<hr>
+<p style="font-size: 10px;">{{REPORT_NOTES}}</p>
+{{ELECTRONIC_VERIFY_NOTE}}
+</textarea>
+        </div>
+
+        <button type="button" class="print-btn" onclick="window.print()">🖨️ PRINT PREVIEW A4</button>
+        <button type="submit" class="submit-btn" id="exportBtn">🚀 EXPORT TEMPLATE ZIP</button>
+    </form>
+</div>
+
+<div class="preview-section">
+    <div style="margin-bottom: 15px; width: 100%; max-width: 21cm; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 5px;">
+        <div>
+            <button type="button" class="action-btn" onclick="openFullscreenPreview()">🔍 OPEN IN NEW TAB</button>
+        </div>
+        <div style="display: flex; align-items: center;">
+            <label for="mockDataType" style="color: white; margin-right: 10px; margin-bottom: 0;">PREVIEW DATA:</label>
+            <select id="mockDataType" onchange="updatePreview()" style="width: auto; padding: 5px; font-weight: bold; border-radius: 4px;">
+                <option value="standard">Standard Test (e.g. CBC)</option>
+                <option value="microscopic">Microscopic Examination</option>
+                <option value="culture">Culture & Sensitivity</option>
+                <option value="special">Special / Narrative Test</option>
+            </select>
+        </div>
+    </div>
+    <div class="a4-page-wrapper">
+        <div class="a4-page" id="a4Page">
+        
+        <div class="page-header" id="previewHeaderDiv">
+            <div class="page-header-placeholder">HEADER PORTION</div>
+            <img id="previewHeaderImg" style="display:none;" />
+        </div>
+
+        <div class="page-body" id="previewBodyDiv">
+            <div class="watermark-layer">
+                <img id="previewWatermarkImg" style="display:none;" />
+            </div>
+            <div class="content-layer" id="previewBodyContent">
+                <!-- HTML gets dumped here -->
+            </div>
+        </div>
+
+        <div class="page-footer" id="previewFooterDiv">
+            <div class="page-footer-placeholder">FOOTER PORTION</div>
+            <img id="previewFooterImg" style="display:none;" />
+            <!-- Doctor Signature (Overlaid in Footer right if exists) -->
+            <img id="previewSignatureImg" style="display:none; position: absolute; right: 20px; top: -40px; max-height: 40px; border: 1px dashed #eee;" />
+        </div>
+        
+        <!-- Live QR Preview Overlay -->
+        <div id="previewQrOverlay" style="display:none; position: absolute; bottom: 12px; right: 20px; z-index: 100; background: white; padding: 2px; border: 1px solid #ccc;">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=PREVIEW" alt="QR Preview" style="width: 50px; height: 50px; display: block;">
+            <div style="font-size: 7px; text-align: center; font-weight: bold; color: #333;">VERIFY</div>
+        </div>
+
+    </div>
+    </div>
+</div>
+
+<script>
+    // Utilities
+    const cmToPxScale = 37.795275591; // 1 cm = ~37.8 px
+    const getPixels = (val, unit) => unit === 'cm' ? val * cmToPxScale : val;
+
+    // Elements
+    const formEls = {
+        htmlContent: document.getElementById('htmlContent'),
+        headerHeight: document.getElementById('headerHeight'),
+        headerUnit: document.getElementById('headerUnit'),
+        footerHeight: document.getElementById('footerHeight'),
+        footerUnit: document.getElementById('footerUnit'),
+        headerImg: document.getElementById('headerImg'),
+        footerImg: document.getElementById('footerImg'),
+        watermarkImg: document.getElementById('watermarkImg')
+    };
+
+    const previewEls = {
+        headerDiv: document.getElementById('previewHeaderDiv'),
+        footerDiv: document.getElementById('previewFooterDiv'),
+        headerImg: document.getElementById('previewHeaderImg'),
+        footerImg: document.getElementById('previewFooterImg'),
+        watermarkImg: document.getElementById('previewWatermarkImg'),
+        bodyContent: document.getElementById('previewBodyContent')
+    };
+
+    // Live Updater Core Function
+    function updatePreview() {
+        // Update Layout Heights
+        const hVal = parseFloat(formEls.headerHeight.value) || 0;
+        const hUnit = formEls.headerUnit.value;
+        const mappedHeaderPx = getPixels(hVal, hUnit);
+        previewEls.headerDiv.style.height = mappedHeaderPx + 'px';
+
+        const fVal = parseFloat(formEls.footerHeight.value) || 0;
+        const fUnit = formEls.footerUnit.value;
+        const mappedFooterPx = getPixels(fVal, fUnit);
+        previewEls.footerDiv.style.height = mappedFooterPx + 'px';
+        
+        // Update Typography & Spacing
+        const baseFontSize = document.getElementById('baseFontSize').value || 11;
+        const pagePadding = document.getElementById('pagePadding').value || 1.0;
+        previewEls.bodyContent.style.fontSize = baseFontSize + 'px';
+        document.getElementById('previewBodyDiv').style.padding = `0.5cm ${pagePadding}cm`;
+
+        // Update Body Variable Placeholders visually
+        let rawHtml = formEls.htmlContent.value;
+        // Mock replacements for Live Testing
+        rawHtml = rawHtml.replace(/{{PATIENT_NAME}}/g, "John Doe (Preview)");
+        rawHtml = rawHtml.replace(/{{PATIENT_ID}}/g, "CC-2026-9081");
+        rawHtml = rawHtml.replace(/{{AGE}}/g, "35 Yrs");
+        rawHtml = rawHtml.replace(/{{GENDER}}/g, "Male");
+        rawHtml = rawHtml.replace(/{{DATE}}/g, "11/05/2026 10:15 AM");
+        rawHtml = rawHtml.replace(/{{REG_DATE}}/g, "10/05/2026 09:00 AM");
+        rawHtml = rawHtml.replace(/{{PHONE}}/g, "0300-1234567");
+        rawHtml = rawHtml.replace(/{{ADDRESS}}/g, "House #123, Street 5, Blue Area, Islamabad");
+        rawHtml = rawHtml.replace(/{{REPORT_DATE}}/g, new Date().toLocaleString());
+        rawHtml = rawHtml.replace(/{{REPORT_NOTES}}/g, document.getElementById('reportNotes').value || "No Notes");
+        rawHtml = rawHtml.replace(/{{PATHOLOGIST_DETAILS}}/g, document.getElementById('pathologistDetails').value);
+        rawHtml = rawHtml.replace(/{{DOCTORS_FOOTER}}/g, document.getElementById('doctorsFooter').value);
+        rawHtml = rawHtml.replace(/{{ELECTRONIC_VERIFY_NOTE}}/g, "<p style=\"text-align: center; font-size: 9px; font-weight: bold; margin-top: 5px; color: #961111;\">*** THIS IS AN ELECTRONICALLY VERIFIED REPORT. NO PHYSICAL SIGNATURE IS REQUIRED. ***<br><span style='font-weight: normal; color: #777;'>(Will only print if enabled in System Integrity Settings)</span></p>");
+        
+        let mockTable = '';
+        let reportTitle = "DIAGNOSTIC REPORT";
+        const mockType = document.getElementById('mockDataType') ? document.getElementById('mockDataType').value : 'standard';
+        
+        if (mockType === 'standard') {
+            reportTitle = "COMPLETE BLOOD COUNT (CBC)";
+            mockTable = `
+                <table style="width:100%; border: 1px solid #ddd; text-align: left; font-size: 11px;">
+                    <tr style="background: #f4f4f4;"><th>Test Parameter</th><th>Result</th><th>Unit</th><th>Range</th></tr>
+                    <tr><td>Hemoglobin</td><td><b>14.2</b></td><td>g/dL</td><td>13.0 - 17.0</td></tr>
+                    <tr><td>Total WBC Count</td><td><b>8500</b></td><td>/cmm</td><td>4000 - 11000</td></tr>
+                </table>`;
+        } else if (mockType === 'microscopic') {
+            reportTitle = "URINALYSIS (MICROSCOPIC)";
+            mockTable = `
+                <table style="width:100%; border: 1px solid #ddd; text-align: left; font-size: 11px;">
+                    <tr style="background: #f4f4f4;"><th>Test Parameter</th><th>Result</th><th>Unit</th><th>Range</th></tr>
+                    <tr><td colspan="4"><b><u>PHYSICAL EXAMINATION</u></b></td></tr>
+                    <tr><td>Color</td><td><b>Pale Yellow</b></td><td></td><td></td></tr>
+                    <tr><td>Appearance</td><td><b>Clear</b></td><td></td><td></td></tr>
+                    <tr><td colspan="4"><b><u>MICROSCOPIC EXAMINATION</u></b></td></tr>
+                    <tr><td>Pus Cells</td><td><b>1-2</b></td><td>/HPF</td><td>0-5</td></tr>
+                    <tr><td>Epithelial Cells</td><td><b>Occasional</b></td><td>/HPF</td><td></td></tr>
+                </table>`;
+        } else if (mockType === 'culture') {
+            reportTitle = "URINE CULTURE & SENSITIVITY";
+            mockTable = `
+                <div style="font-size: 11px; margin-bottom: 8px;">
+                    <b>Specimen:</b> URINE<br>
+                    <b>Organism Isolated:</b> Escherichia coli<br>
+                    <b>Colony Count:</b> > 10^5 CFU/mL
+                </div>
+                <table style="width:100%; border: 1px solid #ddd; text-align: left; font-size: 11px;">
+                    <tr style="background: #f4f4f4;"><th>Test Parameter (Antibiotic)</th><th>Result (Sensitivity)</th><th>Unit</th><th>Range</th></tr>
+                    <tr><td>Amikacin</td><td><b>Sensitive</b></td><td></td><td></td></tr>
+                    <tr><td>Ciprofloxacin</td><td><b>Resistant</b></td><td></td><td></td></tr>
+                    <tr><td>Meropenem</td><td><b>Sensitive</b></td><td></td><td></td></tr>
+                </table>`;
+        } else if (mockType === 'special') {
+            reportTitle = "HISTOPATHOLOGY BIOPSY";
+            mockTable = `
+                <div style="font-size: 11px;">
+                    <p><b>Clinical History:</b> Patient presents with routine nodule.</p>
+                    <p><b>Gross Examination:</b> Received a single container with formalin, consisting of a single tissue measuring 2x1 cm.</p>
+                    <p><b>Microscopic Description:</b> Sections reveal benign fibrous tissue. No evidence of dysplasia or malignancy identified.</p>
+                    <p><b>Conclusion:</b> BENIGN FIBROADENOMA.</p>
+                </div>`;
+        }
+        
+        rawHtml = rawHtml.replace(/{{REPORT_TITLE}}/g, reportTitle);
+        rawHtml = rawHtml.replace(/{{TEST_TABLE}}/g, mockTable);
+
+        // QR UI Toggle Visuals
+        const enableQrCode = document.getElementById('enableQrCode').checked;
+        const qrDataType = document.getElementById('qrDataType').value;
+        const qrPosition = document.getElementById('qrPosition').value;
+        const qrSettingsDiv = document.getElementById('qrSettingsDiv');
+        const qrCustomDataDiv = document.getElementById('qrCustomDataDiv');
+        const qrOverlay = document.getElementById('previewQrOverlay');
+        
+        if (enableQrCode) {
+            qrSettingsDiv.style.display = 'block';
+            qrOverlay.style.display = 'block';
+            
+            // Update Overlay Position
+            qrOverlay.style.top = 'auto'; qrOverlay.style.bottom = 'auto'; qrOverlay.style.left = 'auto'; qrOverlay.style.right = 'auto';
+            if (qrPosition === 'bottom_right') { qrOverlay.style.bottom = '12px'; qrOverlay.style.right = '20px'; }
+            else if (qrPosition === 'top_right') { qrOverlay.style.top = '12px'; qrOverlay.style.right = '20px'; }
+            else if (qrPosition === 'top_left') { qrOverlay.style.top = '12px'; qrOverlay.style.left = '20px'; }
+            else if (qrPosition === 'bottom_left') { qrOverlay.style.bottom = '12px'; qrOverlay.style.left = '20px'; }
+
+            if (qrDataType !== 'patient_details') {
+                qrCustomDataDiv.style.display = 'block';
+            } else {
+                qrCustomDataDiv.style.display = 'none';
+            }
+        } else {
+            qrSettingsDiv.style.display = 'none';
+            qrOverlay.style.display = 'none';
+        }
+
+        previewEls.bodyContent.innerHTML = rawHtml;
+    }
+
+    // Image Setup
+    function setupImagePreview(inputId, imgId) {
+        document.getElementById(inputId).addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const img = document.getElementById(imgId);
+                    img.src = evt.target.result;
+                    img.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                document.getElementById(imgId).style.display = 'none';
+            }
+        });
+    }
+
+    // Bind Listeners
+    ['input', 'change'].forEach(evt => {
+        formEls.htmlContent.addEventListener(evt, updatePreview);
+        formEls.headerHeight.addEventListener(evt, updatePreview);
+        formEls.headerUnit.addEventListener(evt, updatePreview);
+        formEls.footerHeight.addEventListener(evt, updatePreview);
+        formEls.footerUnit.addEventListener(evt, updatePreview);
+        document.getElementById('reportNotes').addEventListener(evt, updatePreview);
+        document.getElementById('pathologistDetails').addEventListener(evt, updatePreview);
+        document.getElementById('doctorsFooter').addEventListener(evt, updatePreview);
+    });
+
+    setupImagePreview('headerImg', 'previewHeaderImg');
+    setupImagePreview('footerImg', 'previewFooterImg');
+    setupImagePreview('watermarkImg', 'previewWatermarkImg');
+
+    // Setup Mock Type Event specially if exists
+    if(document.getElementById('mockDataType')) {
+        document.getElementById('mockDataType').addEventListener('change', updatePreview);
+    }
+
+    // Fullscreen Preview Popup
+    function openFullscreenPreview() {
+        const a4Html = document.getElementById('a4Page').outerHTML;
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>Fullscreen Preview</title>
+                <style>
+                    body { background: #546E7A; display: flex; justify-content: center; padding: 40px; margin: 0; }
+                    .a4-page {
+                        width: 21cm;
+                        min-height: 29.7cm;
+                        background: white;
+                        box-shadow: 0 0 15px rgba(0,0,0,0.5);
+                        display: flex;
+                        flex-direction: column;
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    .page-header { background: #fafafa; width: 100%; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+                    .page-header img { width: 100%; height: 100%; object-fit: contain; }
+                    .page-header-placeholder { position: absolute; color: #999; font-size: 12px; font-weight: bold; }
+                    .page-body { flex: 1; padding: 2cm; position: relative; font-family: Arial, sans-serif; font-size: 12px; }
+                    .page-footer { background: #fafafa; width: 100%; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+                    .page-footer img { width: 100%; height: 100%; object-fit: contain; }
+                    .page-footer-placeholder { position: absolute; color: #999; font-size: 12px; font-weight: bold; }
+                    .watermark-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.15; display: flex; align-items: center; justify-content: center; }
+                    .watermark-layer img { max-width: 80%; max-height: 80%; object-fit: contain; }
+                    .content-layer { position: relative; z-index: 1; }
+                </style>
+            </head>
+            <body>
+                ${a4Html}
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+
+    // Initial Trigger
+    updatePreview();
+
+    // ZIP Import Logic
+    document.getElementById('importZipInput').addEventListener('change', async function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        try {
+            const zip = await JSZip.loadAsync(file);
+            
+            // 1. Load Metadata
+            const metadataFile = zip.file("metadata.json");
+            if (metadataFile) {
+                const metadataStr = await metadataFile.async("string");
+                const metadata = JSON.parse(metadataStr);
+                
+                document.getElementById('templateName').value = metadata.templateName || "";
+                
+                // Header/Footer Heights
+                const hdrPx = parseFloat(metadata.headerHeight || 0);
+                const ftrPx = parseFloat(metadata.footerHeight || 0);
+                
+                // Determine best unit (cm if it's a neat division of 37.795, otherwise px)
+                if (hdrPx % 37.795 < 1 || hdrPx % 37.795 > 36.795) {
+                    document.getElementById('headerHeight').value = (hdrPx / 37.795).toFixed(1);
+                    document.getElementById('headerUnit').value = 'cm';
+                } else {
+                    document.getElementById('headerHeight').value = hdrPx;
+                    document.getElementById('headerUnit').value = 'px';
+                }
+
+                if (ftrPx % 37.795 < 1 || ftrPx % 37.795 > 36.795) {
+                    document.getElementById('footerHeight').value = (ftrPx / 37.795).toFixed(1);
+                    document.getElementById('footerUnit').value = 'cm';
+                } else {
+                    document.getElementById('footerHeight').value = ftrPx;
+                    document.getElementById('footerUnit').value = 'px';
+                }
+
+                document.getElementById('pathologistDetails').value = metadata.pathologistDetails || "";
+                document.getElementById('doctorsFooter').value = metadata.doctorsFooter || "";
+                document.getElementById('reportNotes').value = metadata.reportNotes || "";
+                
+                // Typography & Spacing
+                document.getElementById('baseFontSize').value = metadata.baseFontSize || 11;
+                document.getElementById('pagePadding').value = metadata.pagePadding || 1.0;
+                
+                // QR Settings
+                document.getElementById('enableQrCode').checked = metadata.qrEnabled === true || metadata.qrEnabled === "true";
+                document.getElementById('qrDataType').value = metadata.qrDataType || "patient_details";
+                document.getElementById('qrCustomData').value = metadata.qrCustomData || "";
+                document.getElementById('qrPosition').value = metadata.qrPosition || "bottom_right";
+
+                // Load Assets
+                const assets = metadata.assets || {};
+                async function loadAssetToPreview(assetKey, imgId) {
+                    if (assets[assetKey]) {
+                        const assetFile = zip.file("assets/" + assets[assetKey]);
+                        if (assetFile) {
+                            const blob = await assetFile.async("blob");
+                            const dataUrl = await new Promise(resolve => {
+                                const r = new FileReader();
+                                r.onload = () => resolve(r.result);
+                                r.readAsDataURL(blob);
+                            });
+                            const img = document.getElementById(imgId);
+                            img.src = dataUrl;
+                            img.style.display = 'block';
+                            
+                            // We can't easily populate the file input again (security)
+                            // but our updatePreview uses the img.src so it works for preview.
+                        }
+                    }
+                }
+
+                await loadAssetToPreview('header', 'previewHeaderImg');
+                await loadAssetToPreview('footer', 'previewFooterImg');
+                await loadAssetToPreview('watermark', 'previewWatermarkImg');
+                await loadAssetToPreview('signature', 'previewSignatureImg'); // Assuming previewSignatureImg exists in update logic
+            }
+
+            // 2. Load HTML
+            const htmlFile = zip.file("template.html");
+            if (htmlFile) {
+                const htmlContent = await htmlFile.async("string");
+                document.getElementById('htmlContent').value = htmlContent;
+                document.getElementById('templatePreset').value = 'custom';
+            }
+
+            updatePreview();
+            alert("✅ Template ZIP loaded successfully!");
+
+        } catch (error) {
+            console.error(error);
+            alert("❌ Failed to parse ZIP: " + error.message);
+        }
+    });
+
+    // Preset Logic
+    const presets = {
+        modern_standard: `<div style="text-align: center; margin-bottom: 20px;">
+    <h3>{{REPORT_TITLE}}</h3>
+</div>
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px;">
+    <tr>
+        <td style="width: 50%;"><b>MRNO:</b> {{PATIENT_ID}}</td>
+        <td style="width: 50%; text-align: right;"><b>Requested:</b> {{REG_DATE}}</td>
+    </tr>
+    <tr>
+        <td><b>Name:</b> {{PATIENT_NAME}}</td>
+        <td style="text-align: right;"><b>Specimen Received:</b> {{DATE}}</td>
+    </tr>
+    <tr>
+        <td><b>Age/Sex:</b> {{AGE}} / {{GENDER}}</td>
+        <td style="text-align: right;"><b>Report Date:</b> {{REPORT_DATE}}</td>
+    </tr>
+    <tr>
+        <td><b>Phone:</b> {{PHONE}}</td>
+        <td style="text-align: right;"><b>Referred By:</b> {{REF_DR}}</td>
+    </tr>
+    <tr>
+        <td><b>Address:</b> {{ADDRESS}}</td>
+        <td style="text-align: right;"><b>Reported By:</b> {{PATHOLOGIST_DETAILS}}</td>
+    </tr>
+</table>
+<hr>
+{{TEST_TABLE}}
+<hr>
+<p style="font-size: 10px;">{{REPORT_NOTES}}</p>
+{{ELECTRONIC_VERIFY_NOTE}}`,
+
+        minimalist: `<h2 style="color: #333; margin-bottom:10px;">{{REPORT_TITLE}}</h2>
+<div style="display:grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #000; padding-bottom:10px; margin-bottom: 20px; font-size: 11px; line-height: 1.6;">
+    <div>
+        <strong>MRNO:</strong> {{PATIENT_ID}}<br>
+        <strong>Name:</strong> {{PATIENT_NAME}}<br>
+        <strong>Age/Sex:</strong> {{AGE}} / {{GENDER}}<br>
+        <strong>Phone:</strong> {{PHONE}}
+    </div>
+    <div style="text-align:right;">
+        <strong>Requested:</strong> {{REG_DATE}}<br>
+        <strong>Specimen:</strong> {{DATE}}<br>
+        <strong>Ref By:</strong> {{REF_DR}}<br>
+        <strong>Reported By:</strong> {{PATHOLOGIST_DETAILS}}
+    </div>
+</div>
+{{TEST_TABLE}}
+<div style="margin-top: 30px; font-style: italic; font-size: 10px; color: #555;">{{REPORT_NOTES}}</div>
+{{ELECTRONIC_VERIFY_NOTE}}`,
+
+        executive: `<div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+    <h3 style="margin-top:0; color:#003366; text-align:center;">{{REPORT_TITLE}}</h3>
+    <table style="width: 100%; font-size: 11px; line-height: 1.5;">
+        <tr>
+            <td style="width: 15%;"><b>MRNO:</b></td><td style="width: 35%;">{{PATIENT_ID}}</td>
+            <td style="width: 15%;"><b>Requested:</b></td><td style="width: 35%;">{{REG_DATE}}</td>
+        </tr>
+        <tr>
+            <td><b>Patient Name:</b></td><td>{{PATIENT_NAME}}</td>
+            <td><b>Received:</b></td><td>{{DATE}}</td>
+        </tr>
+        <tr>
+            <td><b>Age / Sex:</b></td><td>{{AGE}} / {{GENDER}}</td>
+            <td><b>Referred By:</b></td><td>{{REF_DR}}</td>
+        </tr>
+        <tr>
+            <td><b>Phone:</b></td><td>{{PHONE}}</td>
+            <td><b>Reported By:</b></td><td>{{PATHOLOGIST_DETAILS}}</td>
+        </tr>
+    </table>
+</div>
+{{TEST_TABLE}}
+<div style="border-top: 2px solid #003366; margin-top: 20px; padding-top: 10px; font-size: 10px;">
+    <strong>Clinical Notes:</strong><br>{{REPORT_NOTES}}
+</div>
+{{ELECTRONIC_VERIFY_NOTE}}`,
+
+        compact: `<h3 style="text-align: center; text-decoration: underline; margin-bottom: 10px;">{{REPORT_TITLE}}</h3>
+<div style="font-size: 10px; margin-bottom: 15px; border: 1px solid #eee; padding: 5px;">
+    <b>MRNO:</b> {{PATIENT_ID}} | <b>Patient:</b> {{PATIENT_NAME}} | <b>Age/Sex:</b> {{AGE}}/{{GENDER}} | <b>Phone:</b> {{PHONE}}<br>
+    <b>Ref By:</b> {{REF_DR}} | <b>Reg:</b> {{REG_DATE}} | <b>Coll:</b> {{DATE}} | <b>Pathologist:</b> {{PATHOLOGIST_DETAILS}}
+</div>
+{{TEST_TABLE}}
+<p style="font-size: 9px; margin-top: 15px;">{{REPORT_NOTES}}</p>
+{{ELECTRONIC_VERIFY_NOTE}}`
+    };
+
+    function loadPreset() {
+        const presetSelect = document.getElementById('templatePreset');
+        const presetId = presetSelect.value;
+        if (presetId !== 'custom') {
+            document.getElementById('htmlContent').value = presets[presetId];
+            document.getElementById('templateName').value = presetSelect.options[presetSelect.selectedIndex].text;
+            updatePreview();
+        }
+    }
+
+    // Export Logic
+    document.getElementById('templateForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const exportBtn = document.getElementById('exportBtn');
+        exportBtn.disabled = true; exportBtn.innerText = "PACKAGING ZIP...";
+
+        try {
+            const zip = new JSZip();
+            zip.file("template.html", formEls.htmlContent.value);
+
+            // Compute actual standard Pixels exactly for the Java backend config mappings
+            const finalHeaderPx = Math.round(getPixels(parseFloat(formEls.headerHeight.value), formEls.headerUnit.value));
+            const finalFooterPx = Math.round(getPixels(parseFloat(formEls.footerHeight.value), formEls.footerUnit.value));
+
+            const metadata = {
+                templateName: document.getElementById('templateName').value,
+                headerHeight: finalHeaderPx.toString(),
+                footerHeight: finalFooterPx.toString(),
+                pathologistDetails: document.getElementById('pathologistDetails').value,
+                doctorsFooter: document.getElementById('doctorsFooter').value,
+                reportNotes: document.getElementById('reportNotes').value,
+                baseFontSize: document.getElementById('baseFontSize').value,
+                pagePadding: document.getElementById('pagePadding').value,
+                qrEnabled: document.getElementById('enableQrCode').checked,
+                qrDataType: document.getElementById('qrDataType').value,
+                qrCustomData: document.getElementById('qrCustomData').value,
+                qrPosition: document.getElementById('qrPosition').value,
+                assets: {}
+            };
+
+            const assetsFolder = zip.folder("assets");
+            async function addAsset(inputId, previewImgId, assetKey) {
+                const input = document.getElementById(inputId);
+                const previewImg = document.getElementById(previewImgId);
+                
+                if (input.files.length > 0) {
+                    const f = input.files[0];
+                    const ext = f.name.split('.').pop();
+                    const nName = `${assetKey}.${ext}`;
+                    assetsFolder.file(nName, f);
+                    metadata.assets[assetKey] = nName;
+                } else if (previewImg && previewImg.src && previewImg.src.startsWith('data:')) {
+                    // Re-export existing imported asset
+                    const dataUrl = previewImg.src;
+                    const commaIdx = dataUrl.indexOf(',');
+                    const base64Data = dataUrl.substring(commaIdx + 1);
+                    const mime = dataUrl.substring(5, commaIdx).split(';')[0];
+                    const ext = mime.split('/')[1] || 'png';
+                    const nName = `${assetKey}.${ext}`;
+                    assetsFolder.file(nName, base64Data, {base64: true});
+                    metadata.assets[assetKey] = nName;
+                }
+            }
+
+            await addAsset('headerImg', 'previewHeaderImg', 'header');
+            await addAsset('footerImg', 'previewFooterImg', 'footer');
+            await addAsset('watermarkImg', 'previewWatermarkImg', 'watermark');
+            await addAsset('signatureImg', 'previewSignatureImg', 'signature');
+
+            zip.file("metadata.json", JSON.stringify(metadata, null, 2));
+
+            const zipBlob = await zip.generateAsync({ type: "blob" });
+            saveAs(zipBlob, metadata.templateName.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase() + "_template.zip");
+
+        } catch (error) {
+            console.error(error); alert("ZIP Generation failed!");
+        } finally {
+            exportBtn.disabled = false; exportBtn.innerText = "🚀 EXPORT TEMPLATE ZIP";
+        }
+    });
+</script>
+
+</body>
+</html>

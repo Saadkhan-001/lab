@@ -1,0 +1,25 @@
+package com.lab.lms.models;
+
+public class User {
+    private int id;
+    private String username;
+    private String password;
+    private Role role;
+
+    public enum Role {
+        ADMIN, RECEPTIONIST, TECHNICIAN, DOCTOR
+    }
+
+    public User(int id, String username, String password, Role role) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
+
+    // Getters and Setters
+    public int getId() { return id; }
+    public String getUsername() { return username; }
+    public String getPassword() { return password; }
+    public Role getRole() { return role; }
+}

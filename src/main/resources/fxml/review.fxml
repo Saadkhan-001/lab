@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="0" stylesheets="@/css/style.css"
+      style="-fx-background-color: #F9F2F2; -fx-padding: 15 20 10 20;"
+      VBox.vgrow="ALWAYS"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.lab.lms.controllers.DoctorReviewController">
+
+    <!-- Page Header -->
+    <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 0 0 12 0;">
+        <VBox spacing="2">
+            <Label text="Medical Validation &amp; Authorization" styleClass="page-title"/>
+            <Label text="Authorize final diagnostic reports and verify critical clinical parameters"
+                   style="-fx-text-fill: #5D4037; -fx-font-size: 12;"/>
+        </VBox>
+    </HBox>
+
+    <!-- Two-Column Layout (Responsive) -->
+    <GridPane vgap="20" hgap="20" VBox.vgrow="ALWAYS">
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="35.0"/>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="65.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints vgrow="ALWAYS"/>
+        </rowConstraints>
+
+        <!-- LEFT: Pending Approvals Card -->
+        <VBox spacing="18" styleClass="card" GridPane.columnIndex="0">
+
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="AWAITING VERIFICATION" styleClass="section-title"/>
+            </HBox>
+
+            <!-- Patient Quick Select -->
+            <VBox spacing="6">
+                <Label text="QUICK SELECT RECENT PATIENT" styleClass="section-title" style="-fx-font-size: 9;"/>
+                <ComboBox fx:id="recentPatientCombo" promptText="Select Recent Patient..." maxWidth="Infinity" onAction="#handleRecentSelect"/>
+            </VBox>
+
+            <Separator/>
+
+            <TableView fx:id="pendingTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colPatient" text="SUBJECT IDENTIFICATION"  prefWidth="180"/>
+                    <TableColumn fx:id="colTest"    text="DIAGNOSTIC TEST"     prefWidth="170"/>
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                </columnResizePolicy>
+                <placeholder>
+                    <Label text="Queue clear — No pending reviews." style="-fx-text-fill: #90A4AE; -fx-font-size: 13;"/>
+                </placeholder>
+            </TableView>
+        </VBox>
+
+        <!-- RIGHT: Review / Approval Card -->
+        <VBox spacing="18" styleClass="card" GridPane.columnIndex="1">
+
+            <Label text="CLINICAL DATA VALIDATION" styleClass="section-title"/>
+
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="PARAMETER ANALYSIS" styleClass="section-title" HBox.hgrow="ALWAYS"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="btnAddComment" text="+ ADD COMMENT" onAction="#handleAddComment" 
+                        style="-fx-background-color: #ECEFF1; -fx-text-fill: #455A64; -fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 4 10; -fx-cursor: hand;"/>
+            </HBox>
+
+            <TableView fx:id="resultsPreviewTable" VBox.vgrow="ALWAYS" editable="true">
+                <columns>
+                    <TableColumn fx:id="colParamName"  text="PARAMETER"    prefWidth="180" editable="false"/>
+                    <TableColumn fx:id="colParamValue" text="MEASURED"     prefWidth="130" editable="true"
+                                 style="-fx-alignment: CENTER; -fx-text-fill: #1A0A0A; -fx-font-weight: bold;"/>
+                    <TableColumn fx:id="colParamUnit"  text="UNIT"         prefWidth="100" editable="false"
+                                 style="-fx-alignment: CENTER;"/>
+                    <TableColumn fx:id="colParamRange" text="REFERENCE RANGE" prefWidth="160" editable="false"
+                                 style="-fx-alignment: CENTER;"/>
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                </columnResizePolicy>
+                <placeholder>
+                    <Label text="Select active protocol record from the queue."
+                           style="-fx-text-fill: #90A4AE; -fx-font-size: 13;"/>
+                </placeholder>
+            </TableView>
+
+            <!-- Test Comments/Notes -->
+            <VBox fx:id="commentBox" spacing="6" visible="false" managed="false">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="INTERPRETATION / NOTES" styleClass="section-title" style="-fx-font-size: 9;"/>
+                </HBox>
+                <TextArea fx:id="testCommentsArea" promptText="Review or refine clinical notes for this test..." 
+                          prefHeight="60" wrapText="true" style="-fx-font-size: 11;"/>
+            </VBox>
+
+            <Separator/>
+
+            <HBox spacing="12" alignment="CENTER_RIGHT">
+                <Button text="AUTHORIZE &amp; DISPATCH" onAction="#handleApprove"
+                        styleClass="button-success" prefWidth="250" prefHeight="48"/>
+                <Button text="VIEW RECORDS" onAction="#handleNext"
+                        styleClass="button-teal" prefWidth="180" prefHeight="48"/>
+            </HBox>
+        </VBox>
+    </GridPane>
+</VBox>
+
+

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAB LMS | License Key Infrastructure</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #961111;
+            --bg: #f8f9fa;
+            --card: #ffffff;
+            --text: #1a0a0a;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+        }
+
+        .container {
+            background: var(--card);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 500px;
+            border-bottom: 5px solid var(--primary);
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-top: 0;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            font-family: 'Consolas', monospace;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #7a0d0d;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(150, 17, 17, 0.3);
+        }
+
+        .result-area {
+            margin-top: 30px;
+            background: #f1f1f1;
+            padding: 15px;
+            border-radius: 6px;
+            word-break: break-all;
+            display: none;
+            border: 1px dashed #bbb;
+        }
+
+        #keyText {
+            font-family: 'Consolas', monospace;
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .copy-btn {
+            background: #eee;
+            color: #333;
+            font-size: 0.7rem;
+            border: 1px solid #ccc;
+            padding: 4px 8px;
+            margin-top: 10px;
+            width: auto;
+            text-transform: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>License Infrastructure Tool</h2>
+        <p style="font-size: 0.8rem; color: #777; margin-bottom: 20px;">Generate authenticated deployment keys for
+            hardware-bound installations.</p>
+
+        <div class="form-group">
+            <label>KEY PROTOCOL</label>
+            <select id="keyProtocol"
+                style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Outfit';">
+                <option value="NEW_INSTALL">NEW INSTALLATION KEY</option>
+                <option value="RENEWAL">MONTHLY KEY RENEWAL</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>SYSTEM IDENTIFIER (REQUIRED FOR RENEWAL)</label>
+            <input type="text" id="systemId" placeholder="e.g. LAB-XXXX-XXXX">
+        </div>
+
+        <div class="form-group">
+            <label>SUBSCRIPTION TIER</label>
+            <select id="subTier"
+                style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Outfit';"
+                onchange="toggleExpiry()">
+                <option value="MONTHLY">MONTHLY ACCESS</option>
+                <option value="LIFETIME">LIFETIME CLINICAL ACCESS</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="expiryGroup">
+            <label>EXPIRATION DATE</label>
+            <input type="date" id="expiry">
+        </div>
+
+        <button onclick="generateKey()">Generate Activation Key</button>
+
+        <div class="result-area" id="result">
+            <label>ENCRYPTED LICENSE KEY</label>
+            <div id="keyText">XXXX-XXXX-XXXX</div>
+            <button class="copy-btn" onclick="copyKey()">Copy Key to Clipboard</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleExpiry() {
+            const tier = document.getElementById('subTier').value;
+            const group = document.getElementById('expiryGroup');
+            if (tier === 'LIFETIME') {
+                group.style.display = 'none';
+            } else {
+                group.style.display = 'block';
+            }
+        }
+
+        function generateKey() {
+            const protocol = document.getElementById('keyProtocol').value;
+            const sid = document.getElementById('systemId').value.trim();
+            const tier = document.getElementById('subTier').value;
+            const expiry = document.getElementById('expiry').value;
+
+            if (protocol === 'RENEWAL' && !sid) {
+                alert("System ID is required for renewal");
+                return;
+            }
+
+            if (tier === 'MONTHLY' && !expiry) {
+                alert("Please select expiration date");
+                return;
+            }
+
+            // High Fidelity License Payload
+            const payload = {
+                v: "1.0",
+                sid: sid || "PENDING",
+                type: protocol,
+                tier: tier,
+                expiry: tier === 'LIFETIME' ? "9999-12-31" : expiry
+            };
+
+            const key = btoa(JSON.stringify(payload));
+
+            document.getElementById('keyText').innerText = key;
+            document.getElementById('result').style.display = 'block';
+        }
+
+        function copyKey() {
+            const key = document.getElementById('keyText').innerText;
+            navigator.clipboard.writeText(key).then(() => {
+                alert("License key copied!");
+            });
+        }
+    </script>
+
+</body>
+
+</html>

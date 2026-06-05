@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="0" stylesheets="@/css/style.css"
+      style="-fx-background-color: #F9F2F2; -fx-padding: 15 20 10 20;"
+      VBox.vgrow="ALWAYS"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.lab.lms.controllers.SampleCollectionController">
+
+    <!-- Page Header -->
+    <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 0 0 12 0;">
+        <VBox spacing="2">
+            <Label text="Specimen Management &amp; Tracking" styleClass="page-title"/>
+            <Label text="Verified intake of clinical specimens and barcode serialization"
+                   style="-fx-text-fill: #5D4037; -fx-font-size: 12;"/>
+        </VBox>
+    </HBox>
+
+    <!-- Two-Column Layout (Responsive) -->
+    <GridPane vgap="20" hgap="20" VBox.vgrow="ALWAYS">
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="35.0"/>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="65.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints vgrow="ALWAYS"/>
+        </rowConstraints>
+
+        <!-- LEFT: Patient Search Card -->
+        <VBox spacing="18" styleClass="card" GridPane.columnIndex="0">
+
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="1. SUBJECT IDENTIFICATION" styleClass="section-title"/>
+            </HBox>
+
+            <!-- Patient Quick Select -->
+            <VBox spacing="6">
+                <Label text="QUICK SELECT RECENT PATIENT" styleClass="section-title" style="-fx-font-size: 9;"/>
+                <ComboBox fx:id="recentPatientCombo" promptText="Select Recent Patient..." maxWidth="Infinity" onAction="#handleRecentSelect"/>
+            </VBox>
+
+            <Separator/>
+
+            <!-- NEW: Barcode Scan Field -->
+            <VBox spacing="6" style="-fx-background-color: #ECEFF1; -fx-padding: 12; -fx-background-radius: 5;">
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label text="SCAN SPECIMEN BARCODE" styleClass="section-title" style="-fx-font-size: 10; -fx-text-fill: #37474F;"/>
+                </HBox>
+                <TextField fx:id="barcodeScanField" promptText="Scan Barcode (e.g. SAM-123)..." 
+                           onAction="#handleBarcodeScan"
+                           style="-fx-font-family: 'Consolas', monospace; -fx-font-size: 14; -fx-background-color: white; -fx-border-color: #961111; -fx-border-radius: 4;"/>
+                <Label fx:id="scanStatusLabel" text="Ready for scan..." style="-fx-font-size: 10; -fx-text-fill: #78909C;"/>
+            </VBox>
+
+            <!-- Selected Patient Feedback -->
+            <Label fx:id="patientInfoLabel" text="NO PATIENT LOADED" 
+                   style="-fx-text-fill: #961111; -fx-font-weight: bold; -fx-font-size: 13;"/>
+
+            <Separator/>
+
+
+            <!-- Clinical Instructions -->
+            <VBox spacing="10" style="-fx-background-color: #FFF1F1; -fx-padding: 16;">
+                <Label text="COLLECTION PROTOCOL" styleClass="section-title"
+                       style="-fx-text-fill: #961111; -fx-font-size: 10;"/>
+                <VBox spacing="6">
+                    <Label text="• SEARCH for patient using MR Number" wrapText="true"
+                           style="-fx-text-fill: #546E7A; -fx-font-size: 11;"/>
+                    <Label text="• VERIFY patient name and pending tests" wrapText="true"
+                           style="-fx-text-fill: #546E7A; -fx-font-size: 11;"/>
+                    <Label text="• EXECUTE collection and generate barcode" wrapText="true"
+                           style="-fx-text-fill: #546E7A; -fx-font-size: 11;"/>
+                </VBox>
+            </VBox>
+        </VBox>
+
+        <!-- RIGHT: Pending Samples Card -->
+        <VBox spacing="18" styleClass="card" GridPane.columnIndex="1">
+
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="2. PENDING SPECIMEN QUEUE" styleClass="section-title"/>
+            </HBox>
+
+            <TableView fx:id="pendingSamplesTable" VBox.vgrow="ALWAYS" styleClass="clinical-table">
+                <columns>
+                    <TableColumn fx:id="colSelect" text="Sel" prefWidth="40"/>
+                    <TableColumn fx:id="colTests" text="Diagnostic Tests" prefWidth="250"/>
+                    <TableColumn fx:id="colSpecimen" text="Collection Requirements" prefWidth="180"/>
+                    <TableColumn fx:id="colStatus" text="Status" prefWidth="120"/>
+                    <TableColumn fx:id="colActions" text="Actions" prefWidth="120"/>
+                </columns>
+                <placeholder>
+                    <Label text="No specimens in queue for the selected MR Number."
+                           style="-fx-text-fill: #90A4AE; -fx-font-size: 13;"/>
+                </placeholder>
+            </TableView>
+
+            <Separator/>
+
+            <HBox spacing="12" alignment="CENTER_RIGHT">
+                <Button text="PRINT SELECTED BARCODES" onAction="#handlePrintSelected"
+                        styleClass="button-sm-teal" prefHeight="46"/>
+                <Button text="PROCEED TO PROCESSING"  onAction="#handleNext"
+                        styleClass="button-primary" prefWidth="280" prefHeight="46"/>
+            </HBox>
+        </VBox>
+    </GridPane>
+</VBox>
+
+

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Report Template</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; color: #333; }
+        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+        .logo { width: 100px; }
+        .patient-details { flex-grow: 1; padding: 0 20px; }
+        .patient-details h1 { margin: 0; font-size: 24px; color: #1a237e; text-transform: uppercase; }
+        .patient-details p { margin: 2px 0; font-size: 14px; }
+        .meta-details { text-align: right; font-size: 12px; }
+        .meta-details p { margin: 2px 0; }
+        .qr-code { width: 80px; height: 80px; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 10px; border: 1px solid #ccc; }
+        
+        .department { font-size: 20px; font-weight: bold; margin-bottom: 5px; color: #b71c1c; }
+        .report-time { text-align: right; font-size: 12px; margin-top: -25px; margin-bottom: 20px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        th { background: #f5f5f5; border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 14px; }
+        td { border: 1px solid #ddd; padding: 10px; font-size: 14px; }
+        .abnormal { color: red; font-weight: bold; }
+        
+        .footer { position: fixed; bottom: 40px; width: 100%; display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+        .doctor-box { border: 1px solid #ddd; padding: 10px; font-size: 10px; text-align: center; }
+        .doctor-box strong { display: block; margin-bottom: 5px; font-size: 11px; }
+        
+        .contact-strip { position: fixed; bottom: 10px; width: 100%; display: flex; justify-content: space-between; font-size: 10px; font-weight: bold; border-top: 1px solid #eee; padding-top: 5px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <!-- [LAB_LOGO_IMAGE] -->
+            <div style="width: 100%; height: 60px; background: #ccc; border-radius: 5px;"></div>
+        </div>
+        <div class="patient-details">
+            <p style="color: #888; font-size: 10px; text-transform: uppercase;">Patient Details:</p>
+            <h1>{{PATIENT_NAME}}</h1>
+            <p>{{AGE}} Yr(s) / {{GENDER}}</p>
+            <p><strong>Mobile:</strong> {{MOBILE}}</p>
+            <p><strong>Location:</strong> {{LOCATION}}</p>
+        </div>
+        <div class="meta-details">
+            <div style="display: flex; gap: 15px;">
+                <div style="text-align: left;">
+                    <p><strong>Registration Date:</strong></p>
+                    <p>{{REG_DATE}}</p>
+                    <p><strong>Reference:</strong></p>
+                    <p>{{REFERENCE}}</p>
+                    <p><strong>Consultant:</strong></p>
+                    <p>{{CONSULTANT}}</p>
+                </div>
+                <div class="qr-code">
+                    QR CODE
+                </div>
+            </div>
+            <p style="margin-top: 10px; font-weight: bold;">Patient Number: {{PATIENT_ID}}</p>
+            <p style="font-weight: bold;">Case Number: {{CASE_ID}}</p>
+        </div>
+    </div>
+
+    <div class="department">Department of Laboratory Medicine</div>
+    <div class="report-time">Reporting Time: {{REPORT_TIME}}</div>
+
+    <div style="font-weight: bold; text-decoration: underline; margin-bottom: 15px; font-size: 18px;">{{TEST_NAME}}</div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Test</th>
+                <th style="text-align: center;">Normal Value</th>
+                <th style="text-align: center;">Unit</th>
+                <th style="text-align: center;">{{CASE_ID}}<br>{{REG_DATE}} Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- [LOOP_START:RESULTS] -->
+            <tr>
+                <td>{{PARAM_NAME}}</td>
+                <td style="text-align: center;">{{NORMAL_RANGE}}</td>
+                <td style="text-align: center;">{{UNIT}}</td>
+                <td style="text-align: center;" class="{{STATUS_CLASS}}">{{VALUE}}</td>
+            </tr>
+            <!-- [LOOP_END:RESULTS] -->
+        </tbody>
+    </table>
+
+    <div style="font-size: 12px; font-style: italic; color: #555;">
+        <strong>NOTE:</strong> {{REPORT_NOTES}}
+    </div>
+
+    <div class="footer">
+        <div class="doctor-box"><strong>DR. KHALID KHAN</strong>Professor Hematology<br>MBBS, FCPS</div>
+        <div class="doctor-box"><strong>DR. ZAHID ULLAH</strong>Associate Professor<br>Microbiology, MPHIL</div>
+        <div class="doctor-box"><strong>DR. SHAGUFTA</strong>Associate Professor<br>Histopathology, DCP</div>
+        <div class="doctor-box"><strong>DR. HUMA RIAZ</strong>Associate Professor<br>Hematology, FCPS</div>
+        <div class="doctor-box"><strong>DR. AMIR ALI</strong>Consultant Pathologist<br>MBBS, FCPS</div>
+    </div>
+
+    <div class="contact-strip">
+        <div>📞 {{LAB_CONTACT}}</div>
+        <div>🌐 Verified Clinical Diagnostic Report</div>
+    </div>
+</body>
+</html>

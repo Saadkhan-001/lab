@@ -1,0 +1,1311 @@
+/* =================================================================
+   LAB LMS — Professional Design System
+   Theme: Medical Crimson Red (Sharp Edges, High Authority)
+   ================================================================= */
+
+/* -----------------------------------------------------------------
+   COLOR TOKENS (Medical Red Palette)
+   --lab-dark:     #1A0A0A  (Deep Red-Black Structure)
+   --lab-primary:  #961111  (Clinical Crimson - Professionalism)
+   --lab-accent:   #961111  (Clinical Crimson)
+   --lab-success:  #961111  (Validated States)
+   --lab-danger:   #961111  (Critical/Alerts)
+   --lab-bg:       #F9F2F2  (Soft Clinical Tinted Gray)
+   --lab-surface:  #FFFFFF  (Pure White Surface)
+    --lab-border:   #CFD8DC  (Standard Border)
+    ----------------------------------------------------------------- */
+
+.root {
+    -fx-accent: #961111;
+    -fx-focus-color: #961111;
+    -fx-faint-focus-color: transparent;
+}
+
+/* MEDICAL LIST VIEW (Search Popups) */
+.medical-list-view {
+    -fx-background-color: white;
+    background-color: white;
+    -fx-border-color: #CFD8DC;
+    border-color: #CFD8DC;
+    -fx-border-width: 1;
+    border-width: 1;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    border-radius: 0;
+}
+
+.medical-list-view:hover {
+    -fx-border-color: #90A4AE;
+    border-color: #90A4AE;
+}
+
+.medical-list-view:focused {
+    -fx-border-color: #961111;
+    border-color: #961111;
+    -fx-border-width: 1.1;
+    border-width: 1.1;
+}
+
+.medical-list-view .list-cell {
+    -fx-padding: 8 15;
+    padding: 8 15;
+    -fx-background-color: white;
+    background-color: white;
+    -fx-text-fill: #1A0A0A;
+    -fx-border-color: transparent transparent #ECEFF1 transparent;
+    border-color: transparent transparent #ECEFF1 transparent;
+    -fx-border-width: 0 0 1 0;
+    border-width: 0 0 1 0;
+}
+
+.medical-list-view .list-cell:filled:hover {
+    -fx-background-color: #F9F2F2;
+    background-color: #F9F2F2;
+    -fx-cursor: hand;
+    cursor: hand;
+}
+
+.medical-list-view .list-cell:filled:selected {
+    -fx-background-color: #961111;
+    background-color: #961111;
+    -fx-text-fill: white;
+}
+
+.medical-list-view .scroll-bar:horizontal .thumb,
+.medical-list-view .scroll-bar:vertical .thumb {
+    -fx-background-color: #961111;
+    background-color: #961111;
+    -fx-opacity: 0.5;
+    opacity: 0.5;
+}
+ 
+/* PREMIUM SINGLE-ELEMENT CLINICAL SEARCH BAR */
+.medical-search-bar {
+    -fx-background-color: white;
+    background-color: white;
+    -fx-border-color: #CFD8DC;
+    border-color: #CFD8DC;
+    -fx-border-width: 1.5;
+    border-width: 1.5;
+    -fx-background-radius: 25;
+    -fx-border-radius: 25;
+    border-radius: 25;
+    -fx-padding: 8 15;
+    padding: 8 15;
+    -fx-font-size: 12px;
+    font-size: 12px;
+    -fx-text-fill: #1A0A0A;
+    -fx-prompt-text-fill: #90A4AE;
+}
+
+.medical-search-bar:focused {
+    -fx-border-color: #961111;
+    border-color: #961111;
+    -fx-background-color: white;
+    background-color: white;
+    /* -fx-effect: dropshadow(three-pass-box, rgba(150, 17, 17, 0.15), 10, 0, 0, 0); */
+}
+
+.filter-toggle {
+    -fx-background-color: #FDFDFD;
+    background-color: #FDFDFD;
+    -fx-border-color: #CFD8DC;
+    border-color: #CFD8DC;
+    -fx-text-fill: #2C3E50;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-padding: 8 20;
+    padding: 8 20;
+    -fx-cursor: hand;
+    cursor: hand;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    border-radius: 5;
+}
+.filter-toggle:selected {
+    -fx-background-color: #961111;
+    background-color: #961111;
+    -fx-text-fill: white;
+    -fx-border-color: #961111;
+    border-color: #961111;
+}
+.filter-toggle:hover {
+    -fx-border-color: #961111;
+    border-color: #961111;
+}
+
+
+.main-root-new {
+    -fx-background-color: white;
+    background-color: white;
+}
+
+.sidebar-container {
+    -fx-padding: 20 10 20 20;
+    padding: 20 10 20 20;
+    -fx-alignment: CENTER;
+}
+
+.sidebar-pill {
+    -fx-background-color: #961111;
+    background-color: #961111;
+    -fx-background-radius: 20;
+    -fx-pref-width: 65;
+    -fx-min-width: 65;
+    min-width: 65;
+    -fx-padding: 20 0;
+    padding: 20 0;
+    -fx-alignment: TOP_CENTER;
+}
+
+.header-container {
+    -fx-padding: 20 25 5 0;
+    padding: 20 25 5 0;
+}
+
+.header-pill {
+    -fx-background-color: #961111;
+    background-color: #961111;
+    -fx-background-radius: 20;
+    -fx-padding: 12 25;
+    padding: 12 25;
+}
+
+.header-pill-title {
+    -fx-font-size: 18px;
+    font-size: 18px;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-text-fill: white;
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-letter-spacing: 0.5px;
+    letter-spacing: 0.5px;
+}
+
+.header-pill-subtitle {
+    -fx-font-size: 11px;
+    font-size: 11px;
+    -fx-text-fill: #FFCDD2;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-text-transform: uppercase;
+    text-transform: uppercase;
+}
+
+.header-pill-clock {
+    -fx-font-size: 16px;
+    font-size: 16px;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.header-pill-date {
+    -fx-font-size: 10px;
+    font-size: 10px;
+    -fx-text-fill: #FFCDD2;
+    -fx-font-weight: bold;
+    font-weight: bold;
+}
+
+.main-content-card {
+    -fx-background-color: transparent;
+    background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    border-radius: 0;
+    /* -fx-effect: null; */
+}
+
+.nav-icon-btn {
+    -fx-background-color: transparent;
+    background-color: transparent;
+    -fx-padding: 8 0;
+    padding: 8 0;
+    -fx-cursor: hand;
+    cursor: hand;
+    -fx-alignment: CENTER;
+    -fx-min-height: 50;
+    min-height: 50;
+}
+
+.nav-icon-btn:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-icon-btn-active {
+    -fx-background-color: white;
+    background-color: white;
+    -fx-background-radius: 50;
+    -fx-max-width: 50;
+    max-width: 50;
+}
+
+.nav-icon-btn-active .label {
+    -fx-text-fill: #961111 !important;
+}
+
+.sidebar-icon-label {
+    -fx-font-size: 24px;
+    font-size: 24px;
+    -fx-text-fill: white;
+}
+
+/* LOGIN PAGE REFINED DESIGN (Flat Clinical Perspective) */
+.login-root {
+    -fx-background-color: white;
+    background-color: white;
+    /* Clean medical white surface */
+}
+
+.login-card-container {
+    -fx-background-color: white;
+    background-color: white;
+    -fx-border-color: #E0E0E0;
+    border-color: #E0E0E0;
+    -fx-border-width: 1;
+    border-width: 1;
+    -fx-background-radius: 0;
+}
+
+.login-ribbon {
+    -fx-background-color: #961111;
+    background-color: #961111;
+    /* Flat Red Sidebar Strip */
+    -fx-min-width: 50;
+    min-width: 50;
+    -fx-pref-width: 50;
+    -fx-background-radius: 0;
+}
+
+.login-title {
+    -fx-font-size: 24px;
+    font-size: 24px;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-text-fill: #1A0A0A;
+    -fx-font-family: "Segoe UI", sans-serif;
+    font-family: "Segoe UI", sans-serif;
+}
+
+.login-tagline {
+    -fx-font-size: 9px;
+    font-size: 9px;
+    -fx-text-fill: #961111;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-text-transform: uppercase;
+    text-transform: uppercase;
+    -fx-letter-spacing: 0.5px;
+    letter-spacing: 0.5px;
+}
+
+.login-input-box {
+    -fx-background-color: white;
+    background-color: white;
+    -fx-border-color: #CFD8DC;
+    border-color: #CFD8DC;
+    -fx-border-width: 1;
+    border-width: 1;
+    -fx-padding: 10;
+    padding: 10;
+    -fx-font-size: 13px;
+    font-size: 13px;
+    -fx-background-radius: 0;
+}
+
+.login-input-box:focused {
+    -fx-border-color: #961111;
+    border-color: #961111;
+}
+
+.login-btn-primary {
+    -fx-background-color: #961111;
+    background-color: #961111;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-font-size: 13px;
+    font-size: 13px;
+    -fx-padding: 14 0;
+    padding: 14 0;
+    -fx-background-radius: 0;
+    -fx-cursor: hand;
+    cursor: hand;
+}
+
+.login-btn-primary:hover {
+    -fx-background-color: #B71C1C;
+    background-color: #B71C1C;
+}
+
+.login-footer-link {
+    -fx-text-fill: #78909C;
+    -fx-font-size: 11px;
+    font-size: 11px;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-cursor: hand;
+    cursor: hand;
+}
+
+.login-footer-link:hover {
+    -fx-text-fill: #961111;
+}
+
+.brand-title {
+    -fx-font-size: 42px;
+    font-size: 42px;
+    -fx-font-weight: 900;
+    font-weight: 900;
+    -fx-text-fill: white;
+    -fx-letter-spacing: 4px;
+    letter-spacing: 4px;
+}
+
+.brand-subtitle {
+    -fx-font-size: 14px;
+    font-size: 14px;
+    -fx-text-fill: #961111;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-text-transform: uppercase;
+    text-transform: uppercase;
+    -fx-letter-spacing: 3px;
+    letter-spacing: 3px;
+}
+
+.feature-bullet {
+    -fx-text-fill: #A08C8C;
+    -fx-font-size: 13px;
+    font-size: 13px;
+}
+
+.feature-icon {
+    -fx-text-fill: #961111;
+    -fx-font-size: 14px;
+    font-size: 14px;
+}
+
+/* ROOT */
+.root {
+    -fx-font-family: "Segoe UI", "Inter", sans-serif;
+    font-family: "Segoe UI", "Inter", sans-serif;
+    -fx-background-color: #F9F2F2;
+    background-color: #F9F2F2;
+    -fx-font-size: 13px;
+    font-size: 13px;
+}
+
+/* ===================== LAYOUT STRUCTURE ===================== */
+.ribbon-bar {
+    -fx-background-color: #1A0A0A;
+    background-color: #1A0A0A;
+    /* -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 0, 0, 0, 4); */
+}
+
+.ribbon-header {
+    -fx-background-color: linear-gradient(to right, #0F0505, #1A0A0A);
+    background-color: linear-gradient(to right, #0F0505, #1A0A0A);
+    -fx-padding: 14 30;
+    padding: 14 30;
+    -fx-border-color: #961111;
+    border-color: #961111;
+    -fx-border-width: 0 0 1 0;
+    border-width: 0 0 1 0;
+}
+
+.ribbon-nav {
+    -fx-background-color: #120505;
+    background-color: #120505;
+    -fx-padding: 0 24;
+    padding: 0 24;
+    -fx-border-color: #331010;
+    border-color: #331010;
+    -fx-border-width: 0 0 1 0;
+    border-width: 0 0 1 0;
+}
+
+/* ScrollPane Normalization (Seamless Integration) */
+.scroll-pane {
+    -fx-background-color: transparent;
+    background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    padding: 0;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+    background-color: transparent;
+}
+
+.scroll-pane .corner {
+    -fx-background-color: transparent;
+    background-color: transparent;
+}
+
+/* ===== MODERN MINIMAL SCROLLBARS (Restored for Small Screen Navigation) ===== */
+.scroll-bar {
+    -fx-background-color: transparent;
+    background-color: transparent;
+}
+
+.scroll-bar:horizontal {
+    -fx-pref-height: 8;
+}
+
+.scroll-bar:vertical {
+    -fx-pref-width: 8;
+}
+
+.scroll-bar .track {
+    -fx-background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(0, 0, 0, 0.05);
+    -fx-background-radius: 10;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #961111;
+    background-color: #961111;
+    -fx-background-radius: 10;
+    -fx-opacity: 0.4;
+    opacity: 0.4;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-opacity: 0.8;
+    opacity: 0.8;
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-background-color: transparent;
+    background-color: transparent;
+}
+
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-shape: "";
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-background-color: transparent;
+    background-color: transparent;
+}
+
+/* Also hide the corner square that appears at the intersection */
+.table-view .corner,
+.list-view .corner,
+.scroll-pane>.corner {
+    -fx-background-color: transparent;
+    background-color: transparent;
+    -fx-padding: 0;
+    padding: 0;
+}
+
+/* Navigation Buttons (Sharp/Rectangle) */
+.nav-button {
+    -fx-background-color: transparent;
+    background-color: transparent;
+    -fx-text-fill: #BDBDBD;
+    -fx-cursor: hand;
+    cursor: hand;
+    -fx-padding: 14 22;
+    padding: 14 22;
+    -fx-font-size: 12px;
+    font-size: 12px;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-background-radius: 0;
+}
+
+.nav-button:hover {
+    -fx-text-fill: white;
+    -fx-background-color: #2A0F0F;
+    background-color: #2A0F0F;
+}
+
+.nav-button-active {
+    -fx-background-color: #961111;
+    background-color: #961111;
+    -fx-text-fill: white;
+    -fx-background-radius: 0;
+    -fx-border-color: #B71C1C;
+    border-color: #B71C1C;
+    -fx-border-width: 0 0 3 0;
+    border-width: 0 0 3 0;
+    /* Bottom thick indicator */
+}
+
+.nav-button-active:hover {
+    -fx-background-color: #B71C1C;
+    background-color: #B71C1C;
+}
+
+/* Logout button (Sharp) */
+.button-logout {
+    -fx-background-color: #B71C1C;
+    background-color: #B71C1C;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+    cursor: hand;
+    -fx-padding: 10 20;
+    padding: 10 20;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-background-radius: 0;
+    -fx-border-color: #7F1D1D;
+    border-color: #7F1D1D;
+    -fx-border-width: 1;
+    border-width: 1;
+}
+
+.button-logout:hover {
+    -fx-background-color: #D32F2F;
+    background-color: #D32F2F;
+}
+
+/* ===================== CARDS ===================== */
+.card {
+    -fx-background-color: white;
+    background-color: white;
+    -fx-background-radius: 0;
+    -fx-border-color: #CFD8DC;
+    border-color: #CFD8DC;
+    -fx-border-width: 1;
+    border-width: 1;
+    -fx-padding: 20;
+    padding: 20;
+    /* Reduced from 24/30 for better space efficiency */
+    /* -fx-effect: none; */
+}
+
+/* Stat Cards (Dashboard) - Flat & Professional */
+.stat-card {
+    -fx-pref-width: 210;
+    -fx-padding: 20;
+    padding: 20;
+    -fx-border-color: #E0E0E0;
+    border-color: #E0E0E0;
+    -fx-border-width: 0 0 0 4;
+    border-width: 0 0 0 4;
+    -fx-background-color: white;
+    background-color: white;
+}
+
+.stat-card-blue,
+.stat-card-teal,
+.stat-card-green,
+.stat-card-red {
+    -fx-border-color: #961111;
+    border-color: #961111;
+}
+
+.stat-label {
+    -fx-text-fill: #78909C;
+    -fx-font-size: 11px;
+    font-size: 11px;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-text-transform: uppercase;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    -fx-font-size: 28px;
+    font-size: 28px;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-text-fill: #1A0A0A;
+}
+
+/* ===================== NEW DASHBOARD ELEMENTS (Inspired UI) ===================== */
+.shortcut-bar {
+    -fx-background-color: white;
+    background-color: white;
+    -fx-padding: 0 20;
+    padding: 0 20;
+    -fx-border-color: #ECEFF1;
+    border-color: #ECEFF1;
+    -fx-border-width: 0 0 1 0;
+    border-width: 0 0 1 0;
+}
+
+.shortcut-group {
+    -fx-padding: 15 20;
+    padding: 15 20;
+    -fx-border-color: #ECEFF1;
+    border-color: #ECEFF1;
+    -fx-border-width: 0 1 0 0;
+    border-width: 0 1 0 0;
+    -fx-alignment: CENTER;
+}
+
+.shortcut-group-label {
+    -fx-font-size: 10px;
+    font-size: 10px;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-text-fill: #961111;
+    -fx-text-transform: uppercase;
+    text-transform: uppercase;
+    -fx-opacity: 0.7;
+    opacity: 0.7;
+    -fx-letter-spacing: 1px;
+    letter-spacing: 1px;
+}
+
+.shortcut-button {
+    -fx-background-color: transparent;
+    background-color: transparent;
+    -fx-padding: 5 15;
+    padding: 5 15;
+    -fx-cursor: hand;
+    cursor: hand;
+    -fx-alignment: CENTER;
+}
+
+.shortcut-button:hover {
+    -fx-background-color: #F5F5F5;
+    background-color: #F5F5F5;
+}
+
+.shortcut-icon {
+    -fx-font-size: 26px;
+    font-size: 26px;
+    -fx-text-fill: #961111;
+}
+
+.shortcut-text {
+    -fx-font-size: 11px;
+    font-size: 11px;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-text-fill: #1A0A0A;
+}
+
+.quick-nav-search {
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    border-radius: 20;
+    -fx-padding: 8 20;
+    padding: 8 20;
+    -fx-pref-width: 250;
+}
+
+.action-button-large {
+    -fx-background-color: #961111;
+    background-color: #961111;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-font-size: 15px;
+    font-size: 15px;
+    -fx-padding: 20 40;
+    padding: 20 40;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    cursor: hand;
+}
+
+.action-button-large:hover {
+    -fx-background-color: #B71C1C;
+    background-color: #B71C1C;
+    /* -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 5); */
+}
+
+.action-button-icon {
+    -fx-font-size: 20px;
+    font-size: 20px;
+}
+
+/* Updated Stat Cards (Inspired Style - Compact & Lengthy) */
+.stat-card-new {
+    -fx-background-color: white;
+    background-color: white;
+    -fx-padding: 10 20;
+    padding: 10 20;
+    -fx-background-radius: 5;
+    -fx-min-height: 80;
+    min-height: 80;
+    -fx-border-color: transparent transparent #961111 transparent;
+    border-color: transparent transparent #961111 transparent;
+    -fx-border-width: 0 0 3 0;
+    border-width: 0 0 3 0;
+    /* -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 10, 0, 0, 3); */
+}
+
+.stat-card-red,
+.stat-card-blue,
+.stat-card-green,
+.stat-card-yellow {
+    -fx-border-color: transparent transparent #961111 transparent;
+    border-color: transparent transparent #961111 transparent;
+}
+
+.section-title {
+    -fx-font-size: 11px;
+    font-size: 11px;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-text-fill: #1A0A0A;
+    -fx-text-transform: uppercase;
+    text-transform: uppercase;
+    -fx-letter-spacing: 1px;
+    letter-spacing: 1px;
+}
+
+.page-title {
+    -fx-font-size: 22px;
+    font-size: 22px;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-text-fill: #1A0A0A;
+    -fx-letter-spacing: -0.5px;
+    letter-spacing: -0.5px;
+}
+
+/* ===================== BUTTONS (SQUARE) ===================== */
+.button-primary {
+    -fx-background-color: #961111;
+    background-color: #961111;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-padding: 10 24;
+    padding: 10 24;
+    -fx-background-radius: 0;
+    -fx-cursor: hand;
+    cursor: hand;
+    -fx-font-size: 12px;
+    font-size: 12px;
+}
+
+.button-primary:hover {
+    -fx-background-color: #B71C1C;
+    background-color: #B71C1C;
+}
+
+.button-success {
+    -fx-background-color: #961111;
+    background-color: #961111;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-padding: 10 24;
+    padding: 10 24;
+    -fx-background-radius: 0;
+    -fx-cursor: hand;
+    cursor: hand;
+}
+
+.button-secondary {
+    -fx-background-color: #455A64;
+    background-color: #455A64;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-padding: 10 24;
+    padding: 10 24;
+    -fx-background-radius: 0;
+    -fx-cursor: hand;
+    cursor: hand;
+}
+
+.button-teal {
+    -fx-background-color: #961111;
+    background-color: #961111;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-padding: 10 24;
+    padding: 10 24;
+    -fx-background-radius: 0;
+}
+
+.button-sm-teal {
+    -fx-background-color: #546E7A; 
+    background-color: #546E7A;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-padding: 8 16;
+    padding: 8 16;
+    -fx-font-size: 11px;
+    font-size: 11px;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+    cursor: hand;
+}
+
+.button-sm-teal:hover {
+    -fx-background-color: #455A64;
+    background-color: #455A64;
+}
+
+.button-sm-red {
+    -fx-background-color: #961111;
+    background-color: #961111;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-padding: 8 16;
+    padding: 8 16;
+    -fx-font-size: 11px;
+    font-size: 11px;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+    cursor: hand;
+}
+
+.button-sm-red:hover {
+    -fx-background-color: #B71C1C;
+    background-color: #B71C1C;
+}
+
+/* ===================== FORM CONTROLS ===================== */
+.text-field,
+.password-field,
+.combo-box,
+.text-area {
+    -fx-background-color: white;
+    background-color: white;
+    -fx-border-color: #CFD8DC;
+    border-color: #CFD8DC;
+    -fx-border-width: 1;
+    border-width: 1;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    border-radius: 0;
+    -fx-padding: 8;
+    padding: 8;
+    -fx-font-size: 13px;
+    font-size: 13px;
+}
+
+.text-field:focused,
+.password-field:focused,
+.combo-box:focused,
+.text-area:focused {
+    -fx-border-color: #961111;
+    border-color: #961111;
+    -fx-border-width: 1.1;
+    border-width: 1.1;
+    /* -fx-effect: none; */
+}
+
+.text-field:hover,
+.password-field:hover,
+.combo-box:hover,
+.text-area:hover {
+    -fx-border-color: #90A4AE;
+    border-color: #90A4AE;
+}
+
+/* UNIFIED AGE INPUT SYSTEM (One Field Look) */
+.age-input-container {
+    -fx-background-color: white;
+    background-color: white;
+    -fx-border-color: #CFD8DC;
+    border-color: #CFD8DC;
+    -fx-border-width: 1;
+    border-width: 1;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    border-radius: 0;
+    -fx-padding: 0 5;
+    padding: 0 5;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.age-input-container:focused-within {
+    -fx-border-color: #B71C1C;
+    border-color: #B71C1C;
+}
+
+.age-input-container:hover {
+    -fx-border-color: #90A4AE;
+    border-color: #90A4AE;
+}
+
+.age-field-minimal {
+    -fx-background-color: transparent;
+    background-color: transparent;
+    -fx-border-color: transparent;
+    border-color: transparent;
+    -fx-border-width: 0;
+    border-width: 0;
+    -fx-padding: 8 2;
+    padding: 8 2;
+    -fx-font-size: 13px;
+    font-size: 13px;
+    -fx-alignment: CENTER;
+}
+
+.age-field-minimal:focused {
+    -fx-background-color: rgba(150, 17, 17, 0.05);
+    background-color: rgba(150, 17, 17, 0.05);
+}
+
+.age-label-minimal {
+    -fx-font-size: 11px;
+    font-size: 11px;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-text-fill: #961111;
+    -fx-opacity: 0.8;
+    opacity: 0.8;
+    -fx-padding: 0 5 0 2;
+    padding: 0 5 0 2;
+}
+
+/* Fix TextArea "Box-in-a-box" look */
+.text-area .scroll-pane {
+    -fx-background-color: transparent;
+    background-color: transparent;
+    -fx-padding: 0;
+    padding: 0;
+    -fx-background-insets: 0;
+}
+
+.text-area .scroll-pane .viewport {
+    -fx-background-color: transparent;
+    background-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.text-area .scroll-pane .content {
+    -fx-background-color: white;
+    background-color: white;
+    -fx-background-insets: 0;
+    -fx-padding: 8;
+    padding: 8;
+}
+
+.text-area:focused .scroll-pane .content,
+.text-area .scroll-pane .content:focused {
+    -fx-background-color: white;
+    background-color: white;
+    -fx-background-insets: 0;
+}
+
+.text-area {
+    -fx-padding: 0;
+    padding: 0;
+    -fx-background-insets: 0;
+}
+
+/* ===================== TABLE VIEW ===================== */
+.table-view {
+    -fx-background-color: white;
+    background-color: white;
+    -fx-border-color: #CFD8DC;
+    border-color: #CFD8DC;
+    -fx-border-width: 1;
+    border-width: 1;
+    -fx-background-radius: 0;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #1A0A0A;
+    background-color: #1A0A0A;
+}
+
+.table-view .column-header {
+    -fx-background-color: #1A0A0A;
+    background-color: #1A0A0A;
+    -fx-padding: 6 10;
+    padding: 6 10;
+    /* Optimized padding to prevent truncation */
+    -fx-border-color: #331010;
+    border-color: #331010;
+    -fx-border-width: 0 1 1 0;
+    border-width: 0 1 1 0;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-font-size: 11px;
+    font-size: 11px;
+    /* Streamlined for high-fidelity rendering */
+}
+
+.table-row-cell {
+    -fx-background-color: white;
+    background-color: white;
+    -fx-table-cell-border-color: #EEEEEE;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: white;
+    background-color: white;
+}
+
+/* Table Row Selection - Preserved as 'columns okay' by user */
+.table-row-cell:selected,
+.table-view:focused .table-row-cell:filled:selected {
+    -fx-background-color: #FFFF00 !important;
+    background-color: #FFFF00 !important;
+    -fx-text-fill: black !important;
+}
+
+.table-row-cell:selected .text,
+.table-row-cell:selected .label {
+    -fx-fill: black !important;
+    fill: black !important;
+    -fx-text-fill: black !important;
+}
+
+/* Clear selection on TableView itself to prevent ghosting */
+.table-view:focused {
+    -fx-background-color: white;
+    background-color: white; /* standard fallback */
+    -fx-background-insets: 0;
+}
+
+/* Professional List Cell (ComboBoxes, etc) - Reverted from Yellow */
+.list-cell:selected {
+    -fx-background-color: #F5F5F5;
+    background-color: #F5F5F5;
+    -fx-text-fill: #1A0A0A;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: white;
+    background-color: white;
+    -fx-text-fill: #1A0A0A;
+}
+
+/* Table Column Selection - Consolidated to Row-Based to prevent flickering/doubling */
+.table-view:focused .table-cell:selected,
+.table-view:focused .table-row-cell:selected .table-cell {
+    -fx-background-color: #FFFF00 !important;
+    background-color: #FFFF00 !important;
+    -fx-text-fill: black !important;
+}
+
+/* Revert ComboBox Dropdown and Button Part to Professional State */
+.combo-box .list-cell,
+.combo-box-popup .list-cell {
+    -fx-background-color: white;
+    background-color: white;
+    -fx-text-fill: #1A0A0A;
+}
+
+.combo-box-popup .list-cell:hover,
+.combo-box-popup .list-cell:selected {
+    -fx-background-color: #961111;
+    background-color: #961111;
+    -fx-text-fill: white;
+}
+
+/* ===================== TAB PANE (PREMIUM RED BAR) ===================== */
+.tab-pane {
+    -fx-tab-min-height: 48;
+    -fx-tab-max-height: 48;
+}
+
+.tab-pane .tab-header-area {
+    -fx-padding: 0;
+    padding: 0;
+    -fx-background-color: #961111;
+    background-color: #961111;
+    /* Clinical Crimson background per user's red bar image */
+}
+
+.tab-pane .tab-header-background {
+    -fx-background-color: #961111;
+    background-color: #961111;
+    -fx-border-color: #7A0D0D;
+    border-color: #7A0D0D;
+    -fx-border-width: 0 0 1 0;
+    border-width: 0 0 1 0;
+}
+
+.tab {
+    -fx-background-color: transparent;
+    background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 0 25;
+    padding: 0 25;
+    -fx-cursor: hand;
+    cursor: hand;
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-width: 0 1 0 0;
+    border-width: 0 1 0 0;
+}
+
+.tab:selected {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.15);
+    /* Subtle highlight for active tab */
+    -fx-border-color: #FFFFFF transparent transparent transparent;
+    border-color: #FFFFFF transparent transparent transparent;
+    -fx-border-width: 3 1 0 1;
+    border-width: 3 1 0 1;
+}
+
+.tab .tab-label {
+    -fx-text-fill: rgba(255, 255, 255, 0.8);
+    /* Semi-transparent white for inactive */
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-font-size: 11px;
+    font-size: 11px;
+    -fx-text-transform: uppercase;
+    text-transform: uppercase;
+}
+
+.tab:selected .tab-label {
+    -fx-text-fill: #FFFFFF;
+    /* Pure white for active */
+}
+
+.tab-content-area {
+    -fx-background-color: #F9F2F2;
+    background-color: #F9F2F2;
+    -fx-padding: 0;
+    padding: 0;
+}
+
+/* ===================== STATUS BADGES (SQUARE) ===================== */
+.badge-success {
+    -fx-background-color: #E8F5E9;
+    background-color: #E8F5E9;
+    -fx-text-fill: #1B5E20;
+    -fx-padding: 2 8;
+    padding: 2 8;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-font-size: 10px;
+    font-size: 10px;
+    -fx-background-radius: 0;
+}
+
+.badge-warn {
+    -fx-background-color: #FFEBEE;
+    background-color: #FFEBEE;
+    -fx-text-fill: #D32F2F;
+    -fx-padding: 2 8;
+    padding: 2 8;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-font-size: 10px;
+    font-size: 10px;
+    -fx-background-radius: 0;
+}
+
+/* ===================== INFO PANELS ===================== */
+.info-panel {
+    -fx-background-color: #FFF1F1;
+    background-color: #FFF1F1;
+    -fx-padding: 12 16;
+    padding: 12 16;
+    -fx-border-color: #B71C1C;
+    border-color: #B71C1C;
+    -fx-border-width: 0 0 0 4;
+    border-width: 0 0 0 4;
+}
+
+/* ===================== SEGMENTED TOGGLE BUTTONS ===================== */
+.toggle-button-left {
+    -fx-background-color: white;
+    background-color: white;
+    -fx-border-color: #CFD8DC;
+    border-color: #CFD8DC;
+    -fx-border-width: 1 0 1 1;
+    border-width: 1 0 1 1;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    border-radius: 0;
+    -fx-padding: 6 18;
+    padding: 6 18;
+    -fx-min-width: 55;
+    min-width: 55px; /* standard fallback */
+    -fx-font-size: 11px;
+    font-size: 11px;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-text-fill: #37474F;
+    -fx-cursor: hand;
+    cursor: hand;
+}
+
+.toggle-button-right {
+    -fx-background-color: white;
+    background-color: white;
+    -fx-border-color: #CFD8DC;
+    border-color: #CFD8DC;
+    -fx-border-width: 1 1 1 1;
+    border-width: 1 1 1 1;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    border-radius: 0;
+    -fx-padding: 6 18;
+    padding: 6 18;
+    -fx-min-width: 55;
+    min-width: 55px; /* standard fallback */
+    -fx-font-size: 11px;
+    font-size: 11px;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-text-fill: #37474F;
+    -fx-cursor: hand;
+    cursor: hand;
+}
+
+.toggle-button-left:selected, .toggle-button-right:selected {
+    -fx-background-color: #961111;
+    background-color: #961111;
+    -fx-text-fill: white;
+    -fx-border-color: #961111;
+    border-color: #961111;
+}
+
+/* =================================================================
+   CONTEXT MENU & DROPDOWN REFINEMENT
+   Fixes the "disgusting" red hover background across all system menus.
+   ================================================================= */
+.context-menu {
+    -fx-background-color: white;
+    background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    border-radius: 8;
+    -fx-border-color: #CFD8DC;
+    border-color: #CFD8DC;
+    -fx-border-width: 1;
+    border-width: 1;
+    -fx-padding: 0;
+    padding: 0;
+}
+
+/* Ensure the CustomMenuItem content doesn't inherit background colors */
+.menu-item {
+    -fx-background-color: transparent;
+    background-color: transparent;
+    -fx-padding: 0;
+    padding: 0;
+}
+
+.menu-item:hover, .menu-item:focused {
+    -fx-background-color: transparent;
+    background-color: transparent;
+}
+
+.menu-item .label {
+    -fx-text-fill: #37474F;
+}
+
+/* Standard Clinical List Selection (If needed) */
+.menu-item:hover .label, .menu-item:focused .label {
+    -fx-text-fill: #1A0A0A;
+}

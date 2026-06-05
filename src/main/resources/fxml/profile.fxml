@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Circle?>
+
+<VBox spacing="0" stylesheets="@/css/style.css"
+      style="-fx-background-color: #F9F2F2;"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.lab.lms.controllers.PatientProfileController">
+
+    <!-- Header Section (Sticky) -->
+    <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-padding: 20 30; -fx-border-color: transparent transparent #CFD8DC transparent;">
+        <Button text="← BACK TO DATABASE" onAction="#handleBack" styleClass="button-secondary" style="-fx-font-size: 11;"/>
+        <Separator orientation="VERTICAL" prefHeight="20"/>
+        <VBox spacing="2">
+            <Label fx:id="lblHeaderName" text="PATIENT PROFILE" styleClass="page-title" style="-fx-font-size: 22;"/>
+            <Label fx:id="lblHeaderId" text="PAT-000000" style="-fx-text-fill: #961111; -fx-font-weight: bold;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="btnDeletePatient" text="DELETE PATIENT" onAction="#handleDeletePatient" styleClass="button-secondary" 
+                style="-fx-font-size: 11; -fx-background-color: #961111; -fx-text-fill: white;"/>
+        <Button text="EDIT PROFILE" onAction="#handleEditProfile" styleClass="button-secondary" style="-fx-font-size: 11;"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+        <VBox spacing="25" style="-fx-padding: 30;">
+            
+            <!-- Patient Stats/Tiles -->
+            <HBox spacing="20">
+                <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="card" style="-fx-background-color: #F9F2F2; -fx-padding: 15; -fx-border-color: #961111; -fx-border-width: 0 0 0 4;">
+                    <Label text="TOTAL VISITS" style="-fx-font-size: 10; -fx-font-weight: bold; -fx-text-fill: #961111;"/>
+                    <Label fx:id="lblTotalVisits" text="0" style="-fx-font-size: 24; -fx-font-weight: bold;"/>
+                </VBox>
+                <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="card" style="-fx-background-color: #F9F2F2; -fx-padding: 15; -fx-border-color: #961111; -fx-border-width: 0 0 0 4;">
+                    <Label text="PENDING REPORTS" style="-fx-font-size: 10; -fx-font-weight: bold; -fx-text-fill: #961111;"/>
+                    <Label fx:id="lblPendingReports" text="0" style="-fx-font-size: 24; -fx-font-weight: bold;"/>
+                </VBox>
+                <VBox spacing="5" HBox.hgrow="ALWAYS" styleClass="card" style="-fx-background-color: #F9F2F2; -fx-padding: 15; -fx-border-color: #961111; -fx-border-width: 0 0 0 4;">
+                    <Label text="LAST VISIT" style="-fx-font-size: 10; -fx-font-weight: bold; -fx-text-fill: #961111;"/>
+                    <Label fx:id="lblLastVisit" text="N/A" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+                </VBox>
+            </HBox>
+
+            <!-- Demographic Information -->
+            <VBox spacing="15" styleClass="card">
+                <Label text="DEMOGRAPHIC ATTRIBUTES" styleClass="section-title"/>
+                <GridPane hgap="40" vgap="15">
+                    <columnConstraints>
+                        <ColumnConstraints prefWidth="150"/>
+                        <ColumnConstraints hgrow="SOMETIMES"/>
+                        <ColumnConstraints prefWidth="150"/>
+                        <ColumnConstraints hgrow="SOMETIMES"/>
+                    </columnConstraints>
+                    
+                    <VBox spacing="2" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Label text="AGE / GENDER" style="-fx-font-size: 9; -fx-text-fill: #78909C; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblAgeGender" text="Loading..." style="-fx-font-size: 14; -fx-font-weight: bold;"/>
+                    </VBox>
+                    
+                    <VBox spacing="2" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <Label text="PRIMARY CONTACT" style="-fx-font-size: 9; -fx-text-fill: #78909C; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblPhone" text="Loading..." style="-fx-font-size: 14; -fx-font-weight: bold;"/>
+                    </VBox>
+
+                    <VBox spacing="2" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                        <Label text="WHATSAPP SYNC" style="-fx-font-size: 9; -fx-text-fill: #78909C; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblWhatsapp" text="Loading..." style="-fx-font-size: 14; -fx-font-weight: bold;"/>
+                    </VBox>
+
+                    <VBox spacing="2" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2">
+                        <Label text="RESIDENTIAL ADDRESS" style="-fx-font-size: 9; -fx-text-fill: #78909C; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblAddress" text="Loading..." style="-fx-font-size: 13;" wrapText="true"/>
+                    </VBox>
+
+                    <VBox spacing="2" GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.columnSpan="2">
+                        <Label text="REFERRED BY" style="-fx-font-size: 9; -fx-text-fill: #78909C; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblReferred" text="Loading..." style="-fx-font-size: 13; -fx-font-weight: bold;"/>
+                    </VBox>
+                </GridPane>
+            </VBox>
+
+            <!-- Visit History Table -->
+            <VBox spacing="15" styleClass="card" VBox.vgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="LONGITUDINAL VISIT HISTORY" styleClass="section-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="btnPrintSelected" text="PRINT SELECTED TESTS" onAction="#handlePrintSelectedTests" 
+                            styleClass="button-primary" style="-fx-font-size: 11; -fx-background-color: #961111; -fx-text-fill: white;" 
+                            visible="false" managed="false"/>
+                    <Button fx:id="btnWhatsAppSelected" text="WHATSAPP SELECTED TESTS" onAction="#handleWhatsAppSelectedTests" 
+                            styleClass="button-secondary" style="-fx-font-size: 11; -fx-background-color: #961111;" 
+                            visible="false" managed="false"/>
+                    <Button text="NEW TEST REGISTRATION" onAction="#handleNewTest" styleClass="button-teal" style="-fx-font-size: 11;"/>
+                </HBox>
+                <TableView fx:id="historyTable" prefHeight="400" style="-fx-background-color: white;">
+                    <columns>
+                        <TableColumn fx:id="colSelect" text="SELECT" prefWidth="60"/>
+                        <TableColumn fx:id="colDate" text="VISIT DATE" prefWidth="150"/>
+                        <TableColumn fx:id="colId" text="SAMPLE ID" prefWidth="120"/>
+                        <TableColumn fx:id="colTest" text="TEST DESCRIPTION" prefWidth="250"/>
+                        <TableColumn fx:id="colStatus" text="STATUS" prefWidth="130"/>
+                        <TableColumn fx:id="colAction" text="ACTIONS" prefWidth="120"/>
+                    </columns>
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                    </columnResizePolicy>
+                </TableView>
+            </VBox>
+        </VBox>
+    </ScrollPane>
+</VBox>

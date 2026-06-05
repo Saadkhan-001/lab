@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="15" stylesheets="@/css/style.css"
+      style="-fx-background-color: #F9F2F2; -fx-padding: 15 20 10 20;"
+      VBox.vgrow="ALWAYS"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.lab.lms.controllers.SummaryReportController">
+
+    <!-- Page Header -->
+    <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 0 0 10 0;">
+        <VBox spacing="2">
+            <Label text="LMS CLINICAL SUMMARY REPORT" styleClass="page-title"/>
+            <Label text="Comprehensive financial and operational performance matrix"
+                   style="-fx-text-fill: #546E7A; -fx-font-size: 11;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="👨‍⚕️ DOCTORS" onAction="#handleOpenDoctorPortal"
+                styleClass="button-primary" prefHeight="38" style="-fx-background-color: #455A64; -fx-padding: 0 15;"/>
+        <Button fx:id="btnRefund" text="💸 REFUND" onAction="#handleRefund"
+                styleClass="button-primary" prefHeight="38" style="-fx-background-color: #961111;"/>
+        <Button text="🖨️ PRINT SUMMARY" onAction="#handlePrintSummary"
+                styleClass="button-primary" prefHeight="38" style="-fx-background-color: #961111;"/>
+        <Button text="⬅ BACK" onAction="#handleBack"
+                styleClass="button-secondary" prefHeight="38" style="-fx-padding: 0 15; -fx-background-color: #455A64;"/>
+    </HBox>
+
+    <!-- Filter Bar -->
+    <VBox spacing="12" styleClass="card" style="-fx-padding: 15 20;">
+        <GridPane vgap="12" hgap="15" alignment="BOTTOM_LEFT">
+            <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS" percentWidth="16"/>
+                <ColumnConstraints hgrow="ALWAYS" percentWidth="14"/>
+                <ColumnConstraints hgrow="ALWAYS" percentWidth="14"/>
+                <ColumnConstraints hgrow="ALWAYS" percentWidth="18"/>
+                <ColumnConstraints hgrow="ALWAYS" percentWidth="22"/>
+                <ColumnConstraints hgrow="ALWAYS" percentWidth="16"/>
+            </columnConstraints>
+
+            <VBox spacing="4" GridPane.columnIndex="0">
+                <Label text="PERIOD" styleClass="section-title" style="-fx-font-size: 9;"/>
+                <ComboBox fx:id="filterPeriod" promptText="Select Period" maxWidth="Infinity" onAction="#handlePeriodChange"/>
+            </VBox>
+
+            <VBox fx:id="customDateBox" spacing="4" GridPane.columnIndex="1" visible="false" managed="false">
+                <Label text="FROM DATE" styleClass="section-title" style="-fx-font-size: 9;"/>
+                <DatePicker fx:id="filterFromDate" promptText="Start..." maxWidth="Infinity"/>
+            </VBox>
+
+            <VBox fx:id="customDateBoxEnd" spacing="4" GridPane.columnIndex="2" visible="false" managed="false">
+                <Label text="TO DATE" styleClass="section-title" style="-fx-font-size: 9;"/>
+                <DatePicker fx:id="filterToDate" promptText="End..." maxWidth="Infinity"/>
+            </VBox>
+
+            <VBox spacing="4" GridPane.columnIndex="3">
+                <Label text="FILTER BY DOCTOR" styleClass="section-title" style="-fx-font-size: 9;"/>
+                <ComboBox fx:id="filterDoctor" promptText="All Doctors" maxWidth="Infinity" editable="true"/>
+            </VBox>
+
+            <VBox spacing="4" GridPane.columnIndex="4">
+                <Label text="FILTER BY TEST" styleClass="section-title" style="-fx-font-size: 9;"/>
+                <ComboBox fx:id="filterTest" promptText="All Tests" maxWidth="Infinity" editable="true"/>
+            </VBox>
+
+            <HBox spacing="8" alignment="BOTTOM_LEFT" GridPane.columnIndex="5">
+                <Button text="FETCH" onAction="#handleFetch" 
+                        styleClass="button-primary" prefHeight="32" style="-fx-font-size: 11; -fx-background-color: #961111;" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            </HBox>
+        </GridPane>
+    </VBox>
+
+    <!-- Table Section -->
+    <VBox spacing="12" styleClass="card" VBox.vgrow="ALWAYS">
+        <TableView fx:id="summaryTable" VBox.vgrow="ALWAYS" style="-fx-font-size: 11;">
+            <columns>
+                <TableColumn fx:id="colDate" text="DATE" prefWidth="120"/>
+                <TableColumn fx:id="colMR" text="MR#" prefWidth="80"/>
+                <TableColumn fx:id="colPatient" text="PATIENT NAME" prefWidth="130"/>
+                <TableColumn fx:id="colTests" text="TESTS" prefWidth="180"/>
+                <TableColumn fx:id="colDoctor" text="DR" prefWidth="90"/>
+                <TableColumn fx:id="colTotal" text="TOTAL" prefWidth="75" style="-fx-alignment: CENTER_RIGHT;"/>
+                <TableColumn fx:id="colDiscount" text="DISC" prefWidth="65" style="-fx-alignment: CENTER_RIGHT;"/>
+                <TableColumn fx:id="colAmount" text="NET" prefWidth="75" style="-fx-alignment: CENTER_RIGHT;"/>
+                <TableColumn fx:id="colPaid" text="PAID" prefWidth="75" style="-fx-alignment: CENTER_RIGHT;"/>
+                <TableColumn fx:id="colDue" text="DUE" prefWidth="75" style="-fx-alignment: CENTER_RIGHT;"/>
+                <TableColumn fx:id="colStatus" text="STATUS" prefWidth="85" style="-fx-alignment: CENTER;"/>
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+            </columnResizePolicy>
+        </TableView>
+        
+        <!-- Expanded Totals Section -->
+        <VBox spacing="10" style="-fx-padding: 10 15; -fx-background-color: #ECEFF1; -fx-background-radius: 4;">
+            <HBox spacing="25" alignment="CENTER_LEFT">
+                <VBox spacing="2">
+                    <Label text="TOTAL RECORDS" style="-fx-font-size: 9; -fx-text-fill: #546E7A; -fx-font-weight: bold;"/>
+                    <Label fx:id="lblTotalRecords" text="0" style="-fx-font-size: 14; -fx-font-weight: bold;"/>
+                </VBox>
+                <Separator orientation="VERTICAL"/>
+                <VBox spacing="2">
+                    <Label text="TOTAL DISCOUNT" style="-fx-font-size: 9; -fx-text-fill: #546E7A; -fx-font-weight: bold;"/>
+                    <Label fx:id="lblTotalDiscount" text="0.00" style="-fx-font-size: 14; -fx-font-weight: bold;"/>
+                </VBox>
+                <Separator orientation="VERTICAL"/>
+                <VBox spacing="2">
+                    <Label text="NET REVENUE" style="-fx-font-size: 9; -fx-text-fill: #1A0A0A; -fx-font-weight: bold;"/>
+                    <Label fx:id="lblTotalAmount" text="0.00" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #1A0A0A;"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <VBox spacing="2">
+                    <Label text="TOTAL PAID (CASH)" style="-fx-font-size: 9; -fx-text-fill: #37474F; -fx-font-weight: bold;"/>
+                    <Label fx:id="lblTotalPaid" text="0.00" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #37474F;"/>
+                </VBox>
+                <Separator orientation="VERTICAL"/>
+                <VBox spacing="2">
+                    <Label text="PENDING DUE" style="-fx-font-size: 9; -fx-text-fill: #961111; -fx-font-weight: bold;"/>
+                    <Label fx:id="lblTotalDue" text="0.00" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #961111;"/>
+                </VBox>
+            </HBox>
+            
+            <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-border-color: #CFD8DC; -fx-border-width: 1 0 0 0; -fx-padding: 8 0 0 0;">
+                <Button text="➕ ADD EXPENSE" onAction="#handleAddExpense" 
+                        style="-fx-background-color: #455A64; -fx-text-fill: white; -fx-font-size: 10; -fx-font-weight: bold; -fx-padding: 5 12;"/>
+                <Region prefWidth="15"/>
+                <Label text="TOTAL EXPENSE:" style="-fx-font-size: 11; -fx-font-weight: bold;"/>
+                <Label fx:id="lblTotalExpense" text="0.00 PKR" style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #961111;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="PROFIT / LOSS (P&amp;L):" style="-fx-font-size: 12; -fx-font-weight: bold;"/>
+                <Label fx:id="lblProfitLoss" text="0.00 PKR" style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #1A0A0A;"/>
+            </HBox>
+        </VBox>
+    </VBox>
+
+</VBox>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
+
+<VBox spacing="0" stylesheets="@/css/style.css"
+      style="-fx-background-color: white;"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.lab.lms.controllers.InstallationWizardController">
+
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-background-color: #961111; -fx-padding: 30 40;">
+        <VBox spacing="5" HBox.hgrow="ALWAYS">
+            <Label text="LABORATORY MANAGEMENT SYSTEM" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10; -fx-opacity: 0.8;"/>
+            <Label text="System Deployment Wizard" style="-fx-text-fill: white; -fx-font-size: 24; -fx-font-weight: bold;"/>
+        </VBox>
+        <StackPane fx:id="stepIndicatorContainer"/>
+    </HBox>
+
+    <!-- Content Area (StackPane for Steps) -->
+    <StackPane fx:id="contentStack" VBox.vgrow="ALWAYS" style="-fx-padding: 40;">
+        
+        <!-- STEP 1: LICENSE ACTIVATION -->
+        <VBox fx:id="step1" spacing="25" visible="true">
+            <Label text="1. ACTIVATION &amp; IDENTITY" styleClass="section-title"/>
+            <Label text="Each installation is bound to a unique system identifier. Please provide an authorized activation key." 
+                   wrapText="true" style="-fx-text-fill: #555; -fx-font-size: 13;"/>
+            
+            <VBox spacing="10">
+                <Label text="PRIMARY SYSTEM IDENTIFIER" styleClass="section-title" style="-fx-font-size: 9;"/>
+                <TextField fx:id="systemIdField" editable="false" style="-fx-font-family: 'Consolas'; -fx-font-size: 16; -fx-background-color: #f5f5f5;"/>
+                <Label text="Copy this ID to the License Generator to receive your key." style="-fx-font-size: 10; -fx-text-fill: #888;"/>
+            </VBox>
+
+            <VBox spacing="10">
+                <Label text="ACTIVATION KEY  *" styleClass="section-title" style="-fx-font-size: 9;"/>
+                <TextArea fx:id="licenseKeyArea" promptText="Paste activation key here..." prefHeight="100" wrapText="true"/>
+            </VBox>
+        </VBox>
+
+        <!-- STEP 2: LAB IDENTITY -->
+        <VBox fx:id="step2" spacing="20" visible="false">
+            <Label text="2. CLINICAL BRANDING" styleClass="section-title"/>
+            
+            <HBox spacing="30">
+                <VBox spacing="15" HBox.hgrow="ALWAYS">
+                    <VBox spacing="8">
+                        <Label text="LABORATORY LEGAL NAME  *" styleClass="section-title" style="-fx-font-size: 9;"/>
+                        <TextField fx:id="labNameField" promptText="MSF Digital Solutions"/>
+                    </VBox>
+                    <VBox spacing="8">
+                        <Label text="PHYSICAL ADDRESS  *" styleClass="section-title" style="-fx-font-size: 9;"/>
+                        <TextField fx:id="labAddressField" promptText="Full hospital/clinic location"/>
+                    </VBox>
+                    <VBox spacing="8">
+                        <Label text="CONTACT NUMBER  *" styleClass="section-title" style="-fx-font-size: 9;"/>
+                        <TextField fx:id="labContactField" promptText="Primary phone/mobile"/>
+                    </VBox>
+                </VBox>
+                
+                <VBox spacing="10" alignment="TOP_CENTER" prefWidth="150">
+                    <Label text="CLINICAL LOGO" styleClass="section-title" style="-fx-font-size: 9;"/>
+                    <StackPane style="-fx-border-color: #ddd; -fx-border-style: dashed; -fx-background-color: #fafafa;" prefHeight="120">
+                        <ImageView fx:id="logoPreview" fitWidth="120" fitHeight="100" preserveRatio="true"/>
+                        <Button text="UPLOAD" onAction="#handleUploadLogo" style="-fx-font-size: 10;"/>
+                    </StackPane>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <!-- STEP 3: ADMIN CONFIGURATION -->
+        <VBox fx:id="step3" spacing="25" visible="false">
+            <Label text="3. ADMINISTRATIVE GATEWAY" styleClass="section-title"/>
+            
+            <VBox spacing="15" maxWidth="400">
+                <VBox spacing="8">
+                    <Label text="ADMIN USERNAME  *" styleClass="section-title" style="-fx-font-size: 9;"/>
+                    <TextField fx:id="adminUserField" promptText="admin"/>
+                </VBox>
+                <VBox spacing="8">
+                    <Label text="SYSTEM PASSWORD  *" styleClass="section-title" style="-fx-font-size: 9;"/>
+                    <PasswordField fx:id="adminPassField" promptText="••••••••"/>
+                </VBox>
+                <VBox spacing="8">
+                    <Label text="CONFIRM PASSWORD  *" styleClass="section-title" style="-fx-font-size: 9;"/>
+                    <PasswordField fx:id="confirmPassField" promptText="••••••••"/>
+                </VBox>
+            </VBox>
+        </VBox>
+    </StackPane>
+
+    <!-- Footer Actions -->
+    <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 20 40; -fx-background-color: #f9f9f9;">
+        <Label fx:id="errorLabel" style="-fx-text-fill: #961111; -fx-font-weight: bold;" HBox.hgrow="ALWAYS"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="btnBack" text="BACK" onAction="#handleBack" styleClass="button-secondary" visible="false"/>
+        <Button fx:id="btnNext" text="PROCEED &amp; VALIDATE" onAction="#handleNext" styleClass="button-primary" prefWidth="200"/>
+    </HBox>
+
+</VBox>

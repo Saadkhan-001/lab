@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="25" stylesheets="@/css/style.css"
+      style="-fx-background-color: #F9F2F2; -fx-padding: 30;"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.lab.lms.controllers.PatientsController">
+
+    <!-- Header Section -->
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <VBox spacing="2">
+            <Label text="Central Patient Registry" styleClass="page-title"/>
+            <Label text="Manage biological identities and review historical diagnostics"
+                   style="-fx-text-fill: #5D4037; -fx-font-size: 12;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="search-box" style="-fx-max-width: 400;">
+            <TextField fx:id="searchField" promptText="Search by ID, Name or Phone..." prefWidth="300"/>
+            <Button text="&#x1F50D;" styleClass="button-secondary"/>
+        </HBox>
+    </HBox>
+
+    <!-- Filter Bar -->
+    <HBox spacing="12" alignment="CENTER_LEFT"
+          style="-fx-background-color: white; -fx-padding: 12 16; -fx-border-color: #CFD8DC; -fx-border-radius: 6; -fx-background-radius: 6;">
+        <Label text="FILTERS:" style="-fx-font-weight: bold; -fx-text-fill: #961111; -fx-font-size: 11;"/>
+        <VBox spacing="3">
+            <Label text="FROM DATE" style="-fx-font-size: 9; -fx-text-fill: #546E7A; -fx-font-weight: bold;"/>
+            <DatePicker fx:id="filterFromDate" promptText="From..." prefWidth="140"/>
+        </VBox>
+        <VBox spacing="3">
+            <Label text="TO DATE" style="-fx-font-size: 9; -fx-text-fill: #546E7A; -fx-font-weight: bold;"/>
+            <DatePicker fx:id="filterToDate" promptText="To..." prefWidth="140"/>
+        </VBox>
+        <VBox spacing="3">
+            <Label text="GENDER" style="-fx-font-size: 9; -fx-text-fill: #546E7A; -fx-font-weight: bold;"/>
+            <ComboBox fx:id="filterGender" promptText="All Genders" prefWidth="130"/>
+        </VBox>
+        <Button text="APPLY FILTER" onAction="#handleApplyFilter" styleClass="button-primary" prefHeight="32" style="-fx-font-size: 11;"/>
+        <Button text="CLEAR" onAction="#handleClearFilter" styleClass="button-secondary" prefHeight="32" style="-fx-font-size: 11;"/>
+    </HBox>
+
+    <!-- Patient Table Card -->
+    <VBox spacing="0" styleClass="card" VBox.vgrow="ALWAYS">
+        <TableView fx:id="patientsTable" VBox.vgrow="ALWAYS" style="-fx-background-color: white;">
+            <columns>
+                <TableColumn fx:id="colId"      text="REG ID"     prefWidth="110"/>
+                <TableColumn fx:id="colName"    text="LEGAL NAME" prefWidth="170"/>
+                <TableColumn fx:id="colAge"     text="AGE"        prefWidth="50"/>
+                <TableColumn fx:id="colGender"  text="GENDER"     prefWidth="70"/>
+                <TableColumn fx:id="colTests"   text="TESTS"      prefWidth="60" style="-fx-alignment: CENTER;"/>
+                <TableColumn fx:id="colPaid"    text="PAID"       prefWidth="80" style="-fx-alignment: CENTER-RIGHT; -fx-cursor: hand;"/>
+                <TableColumn fx:id="colPending" text="PENDING"    prefWidth="80" style="-fx-alignment: CENTER-RIGHT;"/>
+                <TableColumn fx:id="colDiscount" text="DISC."     prefWidth="60" style="-fx-alignment: CENTER-RIGHT;"/>
+                <TableColumn fx:id="colDate"    text="JOIN DATE"  prefWidth="130"/>
+                <TableColumn fx:id="colAction"  text="ACTIONS"    prefWidth="160" style="-fx-alignment: CENTER;"/>
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+            </columnResizePolicy>
+        </TableView>
+
+    </VBox>
+
+</VBox>
