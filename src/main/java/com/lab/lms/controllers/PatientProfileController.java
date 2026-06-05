@@ -46,7 +46,7 @@ public class PatientProfileController {
             return;
 
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
-        colId.setCellValueFactory(new PropertyValueFactory<>("patientName"));
+        colId.setCellValueFactory(new PropertyValueFactory<>("sampleId"));
         colTest.setCellValueFactory(new PropertyValueFactory<>("testName"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
@@ -177,8 +177,7 @@ public class PatientProfileController {
                     + "FROM samples s " +
                     "JOIN patients p ON s.patient_id = p.patient_id " +
                     "JOIN results r ON s.sample_id = r.sample_id " +
-                    "JOIN test_parameters tp ON r.parameter_id = tp.id " +
-                    "JOIN tests t ON tp.test_id = t.id " +
+                    "JOIN tests t ON r.test_id = t.id " +
                     "WHERE s.patient_id = ? " +
                     "GROUP BY s.sample_id, t.id " +
                     "ORDER BY s.collection_date DESC";
