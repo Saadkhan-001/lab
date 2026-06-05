@@ -26,7 +26,9 @@ public class NavigationService {
 
     public static void switchView(String fxmlPath) {
         try {
-            Node node = getView(fxmlPath);
+            // High-Performance Dynamic Reload: Bypass cache for switchView to ensure fresh data
+            FXMLLoader loader = new FXMLLoader(NavigationService.class.getResource(fxmlPath));
+            Node node = loader.load();
             if (contentArea != null && node != null) {
                 contentArea.getChildren().setAll(node);
             }
