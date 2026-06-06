@@ -180,6 +180,101 @@ public class DatabaseManager {
                         System.out.println("[DB-DEBUG] Database is empty. Seeding clinical protocols...");
                         seedDatabaseFromResource(conn);
                     }
+
+                    // [RECOVERY] RE-LINK ORPHANED RESULTS
+                    try {
+                        System.out.println("[RECOVERY] Auditing clinical subject records for orphaned results...");
+                        String orphanCheck = "SELECT COUNT(*) FROM results WHERE parameter_id NOT IN (SELECT id FROM test_parameters)";
+                        int orphanCount = 0;
+                        try (ResultSet rs = stmt.executeQuery(orphanCheck)) {
+                            if (rs.next()) orphanCount = rs.getInt(1);
+                        }
+                        
+                        if (orphanCount > 0) {
+                            System.out.println("[RECOVERY] Detected " + orphanCount + " orphaned records. Initiating re-link protocol...");
+                            // Strategy: For each test, if it has a unique parameter set, re-map by order.
+                            // 1. Identify Test/Sample clusters with orphans
+                            String clusterSql = "SELECT DISTINCT sample_id, test_id FROM results WHERE parameter_id NOT IN (SELECT id FROM test_parameters)";
+                            try (Statement stmt2 = conn.createStatement(); ResultSet rsCluster = stmt2.executeQuery(clusterSql)) {
+                                while (rsCluster.next()) {
+                                    String sid = rsCluster.getString("sample_id");
+                                    int tid = rsCluster.getInt("test_id");
+                                    
+                                    // Get current parameters for this test
+                                    java.util.List<Integer> newParamIds = new java.util.ArrayList<>();
+                                    try (PreparedStatement psP = conn.prepareStatement("SELECT id FROM test_parameters WHERE test_id = ? ORDER BY print_order ASC, id ASC")) {
+                                        psP.setInt(1, tid);
+                                        try (ResultSet rsP = psP.executeQuery()) {
+                                            while (rsP.next()) newParamIds.add(rsP.getInt("id"));
+                                        }
+                                    }
+                                    
+                                    if (!newParamIds.isEmpty()) {
+                                        // Get results for this sample/test
+                                        java.util.List<Integer> resultIds = new java.util.ArrayList<>();
+                                        try (PreparedStatement psR = conn.prepareStatement("SELECT id FROM results WHERE sample_id = ? AND test_id = ? ORDER BY id ASC")) {
+                                            psR.setString(1, sid);
+                                            psR.setInt(2, tid);
+                                            try (ResultSet rsR = psR.executeQuery()) {
+                                                while (rsR.next()) resultIds.add(rsR.getInt("id"));
+                                            }
+                                        }
+                                        
+                                        // Re-link if counts match or if single parameter
+                                        if (newParamIds.size() == 1 || resultIds.size() == newParamIds.size()) {
+                                            for (int i = 0; i < Math.min(resultIds.size(), newParamIds.size()); i++) {
+                                                try (PreparedStatement psUp = conn.prepareStatement("UPDATE results SET parameter_id = ? WHERE id = ?")) {
+                                                    psUp.setInt(1, newParamIds.get(i));
+                                                    psUp.setInt(2, resultIds.get(i));
+                                                    psUp.executeUpdate();
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            System.out.println("[RECOVERY] Record re-linkage cycle complete.");
+                        }
+                    } catch (Exception e) {
+                        System.err.println("[RECOVERY] Warning: Best-effort recovery encountered an issue: " + e.getMessage());
+                    }
+
+                    // [MIGRATION] REMOVE SIMPLE IDs - Merge duplicates and modernize legacy patient IDs
+                    try {
+                        System.out.println("[MIGRATION] Auditing for legacy Simple IDs...");
+                        // Phase 1: Merge duplicates (same name, one simple ID + one PAT ID)
+                        String findDupSql = "SELECT p1.patient_id as old_id, p2.patient_id as new_id " +
+                                            "FROM patients p1 JOIN patients p2 ON LOWER(TRIM(p1.name)) = LOWER(TRIM(p2.name)) " +
+                                            "WHERE p1.patient_id NOT LIKE 'PAT%' AND p2.patient_id LIKE 'PAT%'";
+                        try (Statement stmt3 = conn.createStatement(); ResultSet rsDup = stmt3.executeQuery(findDupSql)) {
+                            while (rsDup.next()) {
+                                String oldId = rsDup.getString("old_id");
+                                String newId = rsDup.getString("new_id");
+                                System.out.println("[MIGRATION] Merging " + oldId + " -> " + newId);
+                                conn.createStatement().executeUpdate("UPDATE samples SET patient_id = '" + newId + "' WHERE patient_id = '" + oldId + "'");
+                                conn.createStatement().executeUpdate("UPDATE invoices SET patient_id = '" + newId + "' WHERE patient_id = '" + oldId + "'");
+                                conn.createStatement().executeUpdate("DELETE FROM patients WHERE patient_id = '" + oldId + "'");
+                            }
+                        }
+                        // Phase 2: Convert remaining non-PAT IDs
+                        String orphanSql = "SELECT patient_id, registration_date FROM patients WHERE patient_id NOT LIKE 'PAT%'";
+                        try (Statement stmt4 = conn.createStatement(); ResultSet rsOrph = stmt4.executeQuery(orphanSql)) {
+                            while (rsOrph.next()) {
+                                String oldId = rsOrph.getString("patient_id");
+                                String regDate = rsOrph.getString("registration_date");
+                                String ym = "202606";
+                                if (regDate != null && regDate.length() >= 7) ym = regDate.substring(0, 4) + regDate.substring(5, 7);
+                                String newId = "PAT" + ym + "MIG" + oldId;
+                                System.out.println("[MIGRATION] Converting " + oldId + " -> " + newId);
+                                conn.createStatement().executeUpdate("UPDATE patients SET patient_id = '" + newId + "' WHERE patient_id = '" + oldId + "'");
+                                conn.createStatement().executeUpdate("UPDATE samples SET patient_id = '" + newId + "' WHERE patient_id = '" + oldId + "'");
+                                conn.createStatement().executeUpdate("UPDATE invoices SET patient_id = '" + newId + "' WHERE patient_id = '" + oldId + "'");
+                            }
+                        }
+                        System.out.println("[MIGRATION] Simple ID removal complete.");
+                    } catch (Exception e) {
+                        System.err.println("[MIGRATION] Warning: " + e.getMessage());
+                    }
                     
                     System.out.println("[DB-DEBUG] 10. Initialization Complete.");
                 }
@@ -382,6 +477,22 @@ public class DatabaseManager {
                             try (ResultSet grs = inPstmt.getGeneratedKeys()) {
                                 if (grs.next()) testId = grs.getInt(1);
                             }
+                        }
+                    } else {
+                        // UPDATE Existing Test to sync with Seed File
+                        String upSql = "UPDATE tests SET numeric_code = ?, alpha_code = ?, category = ?, price = ?, is_special = ?, is_microscopic = ?, is_culture = ?, specimen = ?, protocol_class = ? WHERE id = ?";
+                        try (PreparedStatement upPstmt = conn.prepareStatement(upSql)) {
+                            upPstmt.setString(1, testObj.optString("code", ""));
+                            upPstmt.setString(2, testObj.optString("alpha_code", ""));
+                            upPstmt.setString(3, category);
+                            upPstmt.setDouble(4, testObj.optDouble("price", 0.0));
+                            upPstmt.setInt(5, testObj.optInt("is_special", 0));
+                            upPstmt.setInt(6, testObj.optInt("is_microscopic", 0));
+                            upPstmt.setInt(7, testObj.optInt("is_culture", 0));
+                            upPstmt.setString(8, testObj.optString("specimen", "Blood"));
+                            upPstmt.setString(9, testObj.optString("protocol_class", "INACTIVE"));
+                            upPstmt.setInt(10, testId);
+                            upPstmt.executeUpdate();
                         }
                     }
 

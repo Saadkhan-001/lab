@@ -38,15 +38,15 @@ public class NavigationService {
     }
 
     public static Node getView(String fxmlPath) throws IOException {
-        ViewData data = viewCache.get(fxmlPath);
-        if (data == null) {
-            FXMLLoader loader = new FXMLLoader(NavigationService.class.getResource(fxmlPath));
-            Node node = loader.load();
-            Object controller = loader.getController();
-            data = new ViewData(node, controller);
-            viewCache.put(fxmlPath, data);
-        }
-        return data.node;
+        // Clinical Data Integrity: Always load fresh FXML and controllers
+        FXMLLoader loader = new FXMLLoader(NavigationService.class.getResource(fxmlPath));
+        Node node = loader.load();
+        Object controller = loader.getController();
+        
+        // Maintain a weak reference for getController if needed, but for now we prioritize fresh loads
+        viewCache.put(fxmlPath, new ViewData(node, controller));
+        
+        return node;
     }
 
     public static void preLoad(String fxmlPath) {

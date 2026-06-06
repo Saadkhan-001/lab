@@ -61,7 +61,7 @@
 
             <!-- Selected Tests Table -->
             <Label text="ACTIVE TEST SELECTIONS" styleClass="section-title"/>
-            <TableView fx:id="selectedTestsTable" VBox.vgrow="ALWAYS" style="-fx-selection-bar: transparent; -fx-selection-bar-non-focused: transparent;">
+            <TableView fx:id="selectedTestsTable" VBox.vgrow="ALWAYS" style="-fx-background-color: #F9F2F2; -fx-selection-bar: transparent; -fx-selection-bar-non-focused: transparent;">
                 <columns>
                     <TableColumn fx:id="colNumericCode" text="CODE"  prefWidth="55" minWidth="50" style="-fx-alignment: CENTER;"/>
                     <TableColumn fx:id="colAlphaCode"   text="ALPHA" prefWidth="85" minWidth="80" style="-fx-alignment: CENTER;"/>
@@ -110,7 +110,7 @@
             <Separator/>
 
             <!-- Totals Box -->
-            <VBox spacing="16" style="-fx-background-color: #FFF9F9; -fx-padding: 20;
+            <VBox spacing="16" style="-fx-background-color: #F9F2F2; -fx-padding: 20;
                                        -fx-border-color: #CFD8DC; -fx-border-width: 1;">
                 <HBox alignment="CENTER_LEFT">
                     <Label text="SUBTOTAL AMOUNT" styleClass="section-title" style="-fx-font-size: 10;"/>

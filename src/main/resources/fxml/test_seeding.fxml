@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.lab.lms.controllers.TestSeedingController"
+      spacing="20" style="-fx-background-color: #F9F2F2; -fx-padding: 30;"
+      prefWidth="600" prefHeight="500">
+
+    <HBox spacing="15" alignment="CENTER_LEFT">
+        <VBox spacing="5" HBox.hgrow="ALWAYS">
+            <Label text="MASTER CLINICAL SYNCHRONIZATION" style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #961111;"/>
+            <Label text="Synchronize laboratory protocols with the global clinical engine catalog." 
+                   style="-fx-font-size: 11; -fx-text-fill: #546E7A;"/>
+        </VBox>
+        <ImageView fitWidth="40" fitHeight="40" preserveRatio="true">
+            <!-- Reuse an existing image if possible, or leave blank -->
+        </ImageView>
+    </HBox>
+
+    <VBox spacing="10" style="-fx-background-color: white; -fx-padding: 15; -fx-border-color: #CFD8DC; -fx-border-radius: 8; -fx-background-radius: 8;">
+        <Label text="DATA SOURCE CONFIGURATION" style="-fx-font-size: 10; -fx-font-weight: bold; -fx-text-fill: #961111;"/>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Button text="SELECT EXTERNAL SEED FILE" onAction="#handleChooseFile" 
+                    style="-fx-background-color: #455A64; -fx-text-fill: white; -fx-font-size: 10px; -fx-font-weight: bold; -fx-cursor: hand;"/>
+            <Label fx:id="filePathLabel" text="Using internal catalog: tests_seed.json" 
+                   style="-fx-font-size: 10; -fx-text-fill: #78909C;"/>
+        </HBox>
+    </VBox>
+
+    <VBox spacing="15" styleClass="card" VBox.vgrow="ALWAYS" style="-fx-background-color: white; -fx-padding: 20; -fx-border-color: #CFD8DC; -fx-border-radius: 8; -fx-background-radius: 8;">
+        <Label text="SYNCHRONIZATION STATUS" style="-fx-font-size: 10; -fx-font-weight: bold; -fx-text-fill: #961111;"/>
+        
+        <ListView fx:id="syncLogList" VBox.vgrow="ALWAYS" style="-fx-font-size: 11; -fx-font-family: 'Consolas'; -fx-background-color: #FDFDFD;"/>
+        
+        <VBox spacing="8">
+            <HBox alignment="CENTER_LEFT">
+                <Label fx:id="statusLabel" text="Ready to synchronize..." style="-fx-font-size: 11; -fx-font-weight: bold;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="percentageLabel" text="0%" style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #961111;"/>
+            </HBox>
+            <ProgressBar fx:id="syncProgressBar" progress="0.0" maxWidth="Infinity" prefHeight="15" 
+                         style="-fx-accent: #961111;"/>
+        </VBox>
+    </VBox>
+
+    <HBox spacing="15" alignment="CENTER_RIGHT">
+        <Button text="CANCEL" onAction="#handleCancel" 
+                style="-fx-background-color: #B0BEC5; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 25; -fx-cursor: hand;"/>
+        <Button fx:id="btnStartSync" text="START SYNCHRONIZATION" onAction="#handleStartSync" 
+                style="-fx-background-color: #961111; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 30; -fx-cursor: hand;"/>
+    </HBox>
+
+</VBox>

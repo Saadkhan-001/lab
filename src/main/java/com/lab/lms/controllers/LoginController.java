@@ -152,6 +152,34 @@ public class LoginController {
                     loginBtn.setText("AUTHENTICATE (LOCAL)");
                 }
             }
+
+            // Password Recovery Protocol
+            if (com.lab.lms.services.TrialService.isRecover()) {
+                System.out.println("[RECOVERY] Active: Synchronizing Admin Credentials...");
+                usernameField.setText("admin");
+                String adminPass = fetchAdminPassword();
+                passwordField.setText(adminPass);
+                passwordTextField.setText(adminPass);
+                
+                // Force visibility for recovery audit
+                if (passwordField.isVisible()) {
+                    togglePasswordVisibility();
+                }
+                
+                // Read-Only Lockdown: Hide entry points and instructions
+                loginBtn.setVisible(false);
+                loginBtn.setManaged(false);
+                if (ipContainer != null) {
+                    ipContainer.setVisible(false);
+                    ipContainer.setManaged(false);
+                }
+                networkSettingsLink.setVisible(false);
+                networkSettingsLink.setManaged(false);
+
+                errorLabel.setText("RECOVERY MODE: Note credentials. Closing window UNINSTALLS this utility.");
+                errorLabel.setStyle("-fx-text-fill: #B71C1C; -fx-font-weight: bold;");
+            }
+
             System.out.println("[TRACE] LoginController: Initialization Complete.");
         } catch (Throwable t) {
             System.err.println("[TRACE] LoginController: CRASH during initialize");
@@ -234,5 +262,17 @@ public class LoginController {
             loginBtn.setDisable(true);
             loginBtn.setText("SYNC FAULT");
         }
+    }
+
+    private String fetchAdminPassword() {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String sql = "SELECT password FROM users WHERE role = 'ADMIN' LIMIT 1";
+            try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+                if (rs.next()) return rs.getString("password");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "admin123"; // Fallback to factory default
     }
 }

@@ -5,236 +5,201 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.image.ImageView?>
 
-<HBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      stylesheets="@/css/style.css"
-      styleClass="main-root-new"
-      fx:controller="com.lab.lms.controllers.DashboardController">
-
-    <!-- LEFT: SIDEBAR PILL (Inspired Design) -->
-    <VBox styleClass="sidebar-container" style="-fx-padding: 10 10 10 15;">
-        <VBox styleClass="sidebar-pill" spacing="6">
-            
-            <!-- App Brand Circle -->
-            <StackPane alignment="CENTER" prefHeight="50">
-                <Label text="🔬" style="-fx-font-size: 28; -fx-text-fill: white;"/>
-            </StackPane>
-
-            <Separator prefWidth="35" style="-fx-opacity: 0.2;"/>
-
-            <!-- Navigation Icons -->
-            <VBox fx:id="vboxNav" spacing="10" alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
-                
-                <VBox fx:id="navHome" alignment="CENTER" styleClass="nav-icon-btn, nav-icon-btn-active" onMouseClicked="#switchViewMouse">
-                    <Label text="🏠" styleClass="sidebar-icon-label"/>
-                    <Label text="Home" visible="false" managed="false"/>
+<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.lab.lms.controllers.DashboardController"
+           stylesheets="@/css/style.css">
+    
+    <HBox styleClass="main-root-new">
+        <!-- LEFT: SIDEBAR PILL (Inspired Design) -->
+        <VBox styleClass="sidebar-container" style="-fx-padding: 10 10 10 15;">
+            <VBox styleClass="sidebar-pill" spacing="6">
+                <!-- App Brand Circle -->
+                <StackPane alignment="CENTER" prefHeight="50">
+                    <Label text="🔬" style="-fx-font-size: 28; -fx-text-fill: white;"/>
+                </StackPane>
+                <Separator prefWidth="35" style="-fx-opacity: 0.2;"/>
+                <!-- Navigation Icons -->
+                <VBox fx:id="vboxNav" spacing="10" alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
+                    <VBox fx:id="navHome" alignment="CENTER" styleClass="nav-icon-btn, nav-icon-btn-active" onMouseClicked="#switchViewMouse">
+                        <Label text="🏠" styleClass="sidebar-icon-label"/>
+                        <Label text="Home" visible="false" managed="false"/>
+                    </VBox>
+                    <VBox fx:id="navRegistration" alignment="CENTER" styleClass="nav-icon-btn" onMouseClicked="#switchViewMouse">
+                        <Label text="👥" styleClass="sidebar-icon-label"/>
+                        <Label text="Patient Desk" visible="false" managed="false"/>
+                    </VBox>
+                    <VBox fx:id="navDatabase" alignment="CENTER" styleClass="nav-icon-btn" onMouseClicked="#switchViewMouse">
+                        <Label text="🗄️" styleClass="sidebar-icon-label"/>
+                        <Label text="Patient Database" visible="false" managed="false"/>
+                    </VBox>
+                    <VBox fx:id="navSpecimen" alignment="CENTER" styleClass="nav-icon-btn" onMouseClicked="#switchViewMouse">
+                        <Label text="🧪" styleClass="sidebar-icon-label"/>
+                        <Label text="Specimen" visible="false" managed="false"/>
+                    </VBox>
+                    <VBox fx:id="navBilling" alignment="CENTER" styleClass="nav-icon-btn" onMouseClicked="#switchViewMouse">
+                        <Label text="💳" styleClass="sidebar-icon-label"/>
+                        <Label text="Test Billing" visible="false" managed="false"/>
+                    </VBox>
+                    <VBox fx:id="navProcessing" alignment="CENTER" styleClass="nav-icon-btn" onMouseClicked="#switchViewMouse">
+                        <Label text="🔬" styleClass="sidebar-icon-label"/>
+                        <Label text="Clinical Lab" visible="false" managed="false"/>
+                    </VBox>
+                    <VBox fx:id="navDoctor" alignment="CENTER" styleClass="nav-icon-btn" onMouseClicked="#switchViewMouse">
+                        <Label text="🩺" styleClass="sidebar-icon-label"/>
+                        <Label text="Medical Review" visible="false" managed="false"/>
+                    </VBox>
+                    <VBox fx:id="navHistory" alignment="CENTER" styleClass="nav-icon-btn" onMouseClicked="#switchViewMouse">
+                        <Label text="📊" styleClass="sidebar-icon-label"/>
+                        <Label text="Case History" visible="false" managed="false"/>
+                    </VBox>
+                    <VBox fx:id="navSettings" alignment="CENTER" styleClass="nav-icon-btn" onMouseClicked="#switchViewMouse">
+                        <Label text="⚙" styleClass="sidebar-icon-label"/>
+                        <Label text="Settings" visible="false" managed="false"/>
+                    </VBox>
                 </VBox>
-
-                <VBox fx:id="navRegistration" alignment="CENTER" styleClass="nav-icon-btn" onMouseClicked="#switchViewMouse">
-                    <Label text="👥" styleClass="sidebar-icon-label"/>
-                    <Label text="Patient Desk" visible="false" managed="false"/>
+                <Region VBox.vgrow="ALWAYS"/>
+                <!-- Logout Icon -->
+                <VBox alignment="CENTER" styleClass="nav-icon-btn" onMouseClicked="#handleLogoutMouse">
+                    <Label text="🚪" styleClass="sidebar-icon-label" style="-fx-text-fill: #FFCDD2;"/>
                 </VBox>
-
-                <VBox fx:id="navDatabase" alignment="CENTER" styleClass="nav-icon-btn" onMouseClicked="#switchViewMouse">
-                    <Label text="🗄️" styleClass="sidebar-icon-label"/>
-                    <Label text="Patient Database" visible="false" managed="false"/>
-                </VBox>
-
-                <VBox fx:id="navSpecimen" alignment="CENTER" styleClass="nav-icon-btn" onMouseClicked="#switchViewMouse">
-                    <Label text="🧪" styleClass="sidebar-icon-label"/>
-                    <Label text="Specimen" visible="false" managed="false"/>
-                </VBox>
-
-                <VBox fx:id="navBilling" alignment="CENTER" styleClass="nav-icon-btn" onMouseClicked="#switchViewMouse">
-                    <Label text="💳" styleClass="sidebar-icon-label"/>
-                    <Label text="Test Billing" visible="false" managed="false"/>
-                </VBox>
-
-                <VBox fx:id="navProcessing" alignment="CENTER" styleClass="nav-icon-btn" onMouseClicked="#switchViewMouse">
-                    <Label text="🔬" styleClass="sidebar-icon-label"/>
-                    <Label text="Clinical Lab" visible="false" managed="false"/>
-                </VBox>
-
-                <VBox fx:id="navDoctor" alignment="CENTER" styleClass="nav-icon-btn" onMouseClicked="#switchViewMouse">
-                    <Label text="🩺" styleClass="sidebar-icon-label"/>
-                    <Label text="Medical Review" visible="false" managed="false"/>
-                </VBox>
-
-                <VBox fx:id="navHistory" alignment="CENTER" styleClass="nav-icon-btn" onMouseClicked="#switchViewMouse">
-                    <Label text="📊" styleClass="sidebar-icon-label"/>
-                    <Label text="Case History" visible="false" managed="false"/>
-                </VBox>
-
-                <VBox fx:id="navSettings" alignment="CENTER" styleClass="nav-icon-btn" onMouseClicked="#switchViewMouse">
-                    <Label text="⚙" styleClass="sidebar-icon-label"/>
-                    <Label text="Settings" visible="false" managed="false"/>
-                </VBox>
-
-            </VBox>
-
-            <Region VBox.vgrow="ALWAYS"/>
-
-            <!-- Logout Icon -->
-            <VBox alignment="CENTER" styleClass="nav-icon-btn" onMouseClicked="#handleLogoutMouse">
-                <Label text="🚪" styleClass="sidebar-icon-label" style="-fx-text-fill: #FFCDD2;"/>
             </VBox>
         </VBox>
-    </VBox>
 
-    <!-- RIGHT: MAIN WORKSPACE (Flat Design Style) -->
-    <StackPane HBox.hgrow="ALWAYS" style="-fx-padding: 0;">
-        
-        <VBox styleClass="main-content-card" VBox.vgrow="ALWAYS">
-            
-            <!-- Card Header (Dynamic Branding) -->
-            <VBox styleClass="header-container">
-                <HBox alignment="CENTER_LEFT" spacing="15" styleClass="header-pill">
-                    <StackPane onMouseClicked="#handleLogoClick" prefWidth="48" prefHeight="48" style="-fx-background-color: white; -fx-background-radius: 50; -fx-cursor: hand;">
-                        <ImageView fx:id="labLogoView" fitHeight="34" fitWidth="34" pickOnBounds="true" preserveRatio="true"/>
-                    </StackPane>
-                    <VBox alignment="CENTER_LEFT" spacing="2">
-                        <Label fx:id="headerLabName" text="LABORATORY MANAGEMENT SYSTEM" styleClass="header-pill-title"/>
-                        <Label fx:id="headerLabInfo" text="Diagnostic Excellence &amp; Patient Safety" styleClass="header-pill-subtitle"/>
-                        <Label fx:id="lblTrialStatus" text="DEMO VERSION (10 DAYS REMAINING)" visible="false" managed="false" style="-fx-text-fill: #FFD54F; -fx-font-weight: bold; -fx-font-size: 11;"/>
-                    </VBox>
-                    <Region HBox.hgrow="ALWAYS" />
-                    <HBox alignment="CENTER_RIGHT" spacing="25">
-                        <VBox alignment="CENTER_RIGHT" spacing="5">
-                            <Label fx:id="lblLicenseStatus" text="VERIFYING LICENSE..." style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 11;"/>
-                            <HBox spacing="10" alignment="CENTER_RIGHT">
-                                <Button text="CHECK FOR UPDATE" onAction="#handleCheckForUpdate" 
-                                        style="-fx-background-color: #FFD54F; -fx-text-fill: #1A0A0A; -fx-font-weight: bold; -fx-font-size: 9; -fx-padding: 3 10; -fx-background-radius: 4; -fx-cursor: hand;"/>
-                                
-                                <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 0 0 0 5;">
-                                    
-                                    <!-- License Activation Icon -->
-                                    <StackPane fx:id="headerLicense" onMouseClicked="#handleEnterLicenseKey" style="-fx-background-color: #FB8C00; -fx-background-radius: 50; -fx-cursor: hand; -fx-pref-width: 28; -fx-pref-height: 28;">
-                                        <Label text="🔑" style="-fx-text-fill: white; -fx-font-size: 14;">
-                                            <tooltip><Tooltip text="Activate License / Enter Key"/></tooltip>
-                                        </Label>
-                                    </StackPane>
-
-                                    <!-- Inventory Icon (New Header Location) -->
-                                    <StackPane fx:id="headerInventory" onMouseClicked="#handleNavInventory" style="-fx-background-color: #E65100; -fx-background-radius: 50; -fx-cursor: hand; -fx-pref-width: 28; -fx-pref-height: 28;">
-                                        <Label text="📦" style="-fx-text-fill: white; -fx-font-size: 14;">
-                                            <tooltip><Tooltip text="Inventory Management"/></tooltip>
-                                        </Label>
-                                    </StackPane>
-
-                                    <!-- Video Guide Button -->
-                                    <StackPane onMouseClicked="#handleGuideTutorial" style="-fx-background-color: #FF0000; -fx-background-radius: 50; -fx-cursor: hand; -fx-pref-width: 28; -fx-pref-height: 28;">
-                                        <Label text="▶" style="-fx-text-fill: white; -fx-font-size: 14; -fx-padding: 0 0 0 2;">
-                                            <tooltip><Tooltip text="Video Guide / Tutorials"/></tooltip>
-                                        </Label>
-                                    </StackPane>
-                                    
-                                    <!-- User Manual Button -->
-                                    <StackPane onMouseClicked="#handleUserManual" style="-fx-background-color: #1976D2; -fx-background-radius: 50; -fx-cursor: hand; -fx-pref-width: 28; -fx-pref-height: 28;">
-                                        <Label text="📖" style="-fx-text-fill: white; -fx-font-size: 14;">
-                                            <tooltip><Tooltip text="User Manual &amp; Help"/></tooltip>
-                                        </Label>
-                                    </StackPane>
-
-                                    <!-- Customer Support Button -->
-                                    <StackPane onMouseClicked="#handleCustomerSupport" style="-fx-background-color: #00897B; -fx-background-radius: 50; -fx-cursor: hand; -fx-pref-width: 28; -fx-pref-height: 28;">
-                                        <Label text="🎧" style="-fx-text-fill: white; -fx-font-size: 14;">
-                                            <tooltip><Tooltip text="Customer Support &amp; WhatsApp"/></tooltip>
-                                        </Label>
-                                    </StackPane>
-
-                                    <!-- Export Database Button -->
-                                    <StackPane onMouseClicked="#handleExportDatabase" style="-fx-background-color: #558B2F; -fx-background-radius: 50; -fx-cursor: hand; -fx-pref-width: 28; -fx-pref-height: 28;">
-                                        <Label text="📤" style="-fx-text-fill: white; -fx-font-size: 12;">
-                                            <tooltip><Tooltip text="SQL Export (Backup Database)"/></tooltip>
-                                        </Label>
-                                    </StackPane>
-
-                                    <!-- Import Database Button -->
-                                    <StackPane onMouseClicked="#handleImportDatabase" style="-fx-background-color: #283593; -fx-background-radius: 50; -fx-cursor: hand; -fx-pref-width: 28; -fx-pref-height: 28;">
-                                        <Label text="📥" style="-fx-text-fill: white; -fx-font-size: 12;">
-                                            <tooltip><Tooltip text="SQL Import (Restore Database)"/></tooltip>
-                                        </Label>
-                                    </StackPane>
-                                </HBox>
-                            </HBox>
+        <!-- RIGHT: MAIN WORKSPACE (Flat Design Style) -->
+        <StackPane HBox.hgrow="ALWAYS" style="-fx-padding: 0;">
+            <VBox styleClass="main-content-card" VBox.vgrow="ALWAYS">
+                <!-- Card Header (Dynamic Branding) -->
+                <VBox styleClass="header-container">
+                    <HBox alignment="CENTER_LEFT" spacing="15" styleClass="header-pill">
+                        <StackPane onMouseClicked="#handleLogoClick" prefWidth="48" prefHeight="48" style="-fx-background-color: white; -fx-background-radius: 50; -fx-cursor: hand;">
+                            <ImageView fx:id="labLogoView" fitHeight="34" fitWidth="34" pickOnBounds="true" preserveRatio="true"/>
+                        </StackPane>
+                        <VBox alignment="CENTER_LEFT" spacing="2">
+                            <Label fx:id="headerLabName" text="LABORATORY MANAGEMENT SYSTEM" styleClass="header-pill-title"/>
+                            <Label fx:id="headerLabInfo" text="Diagnostic Excellence &amp; Patient Safety" styleClass="header-pill-subtitle"/>
+                            <Label fx:id="lblTrialStatus" text="DEMO VERSION (10 DAYS REMAINING)" visible="false" managed="false" style="-fx-text-fill: #FFD54F; -fx-font-weight: bold; -fx-font-size: 11;"/>
                         </VBox>
-                        <VBox alignment="CENTER_RIGHT" spacing="2">
-                            <Label fx:id="lblClock" text="00:00:00" styleClass="header-pill-clock"/>
-                            <Label fx:id="lblDate" text="Loading Date..." styleClass="header-pill-date"/>
-                        </VBox>
-                    </HBox>
-                </HBox>
-            </VBox>
-
-            <!-- Scrollable Content -->
-            <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
-                <StackPane fx:id="contentArea" style="-fx-padding: 15 15 15 15;">
-                    
-                    <!-- DEFAULT: Dashboard Home View -->
-                    <VBox fx:id="homeView" spacing="15" VBox.vgrow="ALWAYS">
-                        <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 0 0 5 0;">
-                            <VBox spacing="2" HBox.hgrow="ALWAYS">
-                                <HBox alignment="CENTER_LEFT" spacing="10">
-                                    <Label text="DASHBOARD OVERVIEW" styleClass="page-title" style="-fx-text-fill: #1A0A0A; -fx-font-size: 18;"/>
-                                    <Button fx:id="toggleVisibilityBtn" text="UNHIDE DATA" onAction="#handleToggleVisibility"
-                                            style="-fx-background-color: #ECEFF1; -fx-text-fill: #455A64; -fx-font-size: 8px; -fx-font-weight: bold; -fx-padding: 3 8; -fx-cursor: hand; -fx-background-radius: 4;"/>
-                                </HBox>
-                                <Label text="Clinical operational matrix &amp; KPIs" style="-fx-text-fill: #90A4AE; -fx-font-size: 10;"/>
-                            </VBox>
-                            
-                            <!-- SMART DATE FILTER -->
+                        <Region HBox.hgrow="ALWAYS" />
+                        <HBox alignment="CENTER_RIGHT" spacing="25">
                             <VBox alignment="CENTER_RIGHT" spacing="5">
-                                <ComboBox fx:id="filterDateRange" promptText="Select Period" onAction="#handleDateRangeChange"
-                                          prefWidth="160" style="-fx-font-size: 11; -fx-background-color: white; -fx-border-color: #CFD8DC; -fx-border-radius: 4;"/>
-                                <HBox fx:id="customDateBox" visible="false" managed="false" spacing="5">
-                                    <DatePicker fx:id="filterStartDate" promptText="From" prefWidth="100" style="-fx-font-size: 10;"/>
-                                    <DatePicker fx:id="filterEndDate" promptText="To" prefWidth="100" style="-fx-font-size: 10;"/>
-                                    <Button text="✓" onAction="#handleApplyFilters" style="-fx-background-color: #961111; -fx-text-fill: white; -fx-font-size: 10;"/>
+                                <Label fx:id="lblLicenseStatus" text="VERIFYING LICENSE..." style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 11;"/>
+                                <HBox spacing="10" alignment="CENTER_RIGHT">
+                                    <Button text="CHECK FOR UPDATE" onAction="#handleCheckForUpdate" 
+                                            style="-fx-background-color: #FFD54F; -fx-text-fill: #1A0A0A; -fx-font-weight: bold; -fx-font-size: 9; -fx-padding: 3 10; -fx-background-radius: 4; -fx-cursor: hand;"/>
+                                    <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 0 0 0 5;">
+                                        <!-- License Activation Icon -->
+                                        <StackPane fx:id="headerLicense" onMouseClicked="#handleEnterLicenseKey" style="-fx-background-color: #FB8C00; -fx-background-radius: 50; -fx-cursor: hand; -fx-pref-width: 28; -fx-pref-height: 28;">
+                                            <Label text="🔑" style="-fx-text-fill: white; -fx-font-size: 14;">
+                                                <tooltip><Tooltip text="Activate License / Enter Key"/></tooltip>
+                                            </Label>
+                                        </StackPane>
+                                        <!-- Inventory Icon -->
+                                        <StackPane fx:id="headerInventory" onMouseClicked="#handleNavInventory" style="-fx-background-color: #E65100; -fx-background-radius: 50; -fx-cursor: hand; -fx-pref-width: 28; -fx-pref-height: 28;">
+                                            <Label text="📦" style="-fx-text-fill: white; -fx-font-size: 14;">
+                                                <tooltip><Tooltip text="Inventory Management"/></tooltip>
+                                            </Label>
+                                        </StackPane>
+                                        <!-- Video Guide Button -->
+                                        <StackPane onMouseClicked="#handleGuideTutorial" style="-fx-background-color: #FF0000; -fx-background-radius: 50; -fx-cursor: hand; -fx-pref-width: 28; -fx-pref-height: 28;">
+                                            <Label text="▶" style="-fx-text-fill: white; -fx-font-size: 14; -fx-padding: 0 0 0 2;">
+                                                <tooltip><Tooltip text="Video Guide / Tutorials"/></tooltip>
+                                            </Label>
+                                        </StackPane>
+                                        <!-- User Manual Button -->
+                                        <StackPane onMouseClicked="#handleUserManual" style="-fx-background-color: #1976D2; -fx-background-radius: 50; -fx-cursor: hand; -fx-pref-width: 28; -fx-pref-height: 28;">
+                                            <Label text="📖" style="-fx-text-fill: white; -fx-font-size: 14;">
+                                                <tooltip><Tooltip text="User Manual &amp; Help"/></tooltip>
+                                            </Label>
+                                        </StackPane>
+                                        <!-- Customer Support Button -->
+                                        <StackPane onMouseClicked="#handleCustomerSupport" style="-fx-background-color: #00897B; -fx-background-radius: 50; -fx-cursor: hand; -fx-pref-width: 28; -fx-pref-height: 28;">
+                                            <Label text="🎧" style="-fx-text-fill: white; -fx-font-size: 14;">
+                                                <tooltip><Tooltip text="Customer Support &amp; WhatsApp"/></tooltip>
+                                            </Label>
+                                        </StackPane>
+                                        <!-- Export Database Button -->
+                                        <StackPane onMouseClicked="#handleExportDatabase" style="-fx-background-color: #558B2F; -fx-background-radius: 50; -fx-cursor: hand; -fx-pref-width: 28; -fx-pref-height: 28;">
+                                            <Label text="📤" style="-fx-text-fill: white; -fx-font-size: 12;">
+                                                <tooltip><Tooltip text="SQL Export (Backup Database)"/></tooltip>
+                                            </Label>
+                                        </StackPane>
+                                        <!-- Import Database Button -->
+                                        <StackPane onMouseClicked="#handleImportDatabase" style="-fx-background-color: #283593; -fx-background-radius: 50; -fx-cursor: hand; -fx-pref-width: 28; -fx-pref-height: 28;">
+                                            <Label text="📥" style="-fx-text-fill: white; -fx-font-size: 12;">
+                                                <tooltip><Tooltip text="SQL Import (Restore Database)"/></tooltip>
+                                            </Label>
+                                        </StackPane>
+                                    </HBox>
                                 </HBox>
+                            </VBox>
+                            <VBox alignment="CENTER_RIGHT" spacing="2">
+                                <Label fx:id="lblClock" text="00:00:00" styleClass="header-pill-clock"/>
+                                <Label fx:id="lblDate" text="Loading Date..." styleClass="header-pill-date"/>
                             </VBox>
                         </HBox>
-
-                        <!-- Stat Grid - Compact -->
-                        <HBox spacing="15" style="-fx-padding: 0 0 5 0;">
-                            <HBox alignment="CENTER_LEFT" spacing="12" HBox.hgrow="ALWAYS" styleClass="stat-card-new, stat-card-red" style="-fx-background-radius: 8; -fx-padding: 10 15;">
-                                <VBox spacing="2">
-                                    <Label text="PATIENTS" styleClass="stat-label" style="-fx-font-size: 10;"/>
-                                    <Label fx:id="lblTodayRegistered" text="0" styleClass="stat-value" style="-fx-font-size: 20;"/>
+                    </HBox>
+                </VBox>
+                <!-- Scrollable Content -->
+                <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+                    <StackPane fx:id="contentArea" style="-fx-padding: 15 15 15 15;">
+                        <!-- DEFAULT: Dashboard Home View -->
+                        <VBox fx:id="homeView" spacing="15" VBox.vgrow="ALWAYS">
+                            <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 0 0 5 0;">
+                                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                    <HBox alignment="CENTER_LEFT" spacing="10">
+                                        <Label text="DASHBOARD OVERVIEW" styleClass="page-title" style="-fx-text-fill: #1A0A0A; -fx-font-size: 18;"/>
+                                        <Button fx:id="toggleVisibilityBtn" text="UNHIDE DATA" onAction="#handleToggleVisibility"
+                                                style="-fx-background-color: #ECEFF1; -fx-text-fill: #455A64; -fx-font-size: 8px; -fx-font-weight: bold; -fx-padding: 3 8; -fx-cursor: hand; -fx-background-radius: 4;"/>
+                                    </HBox>
+                                    <Label text="Clinical operational matrix &amp; KPIs" style="-fx-text-fill: #90A4AE; -fx-font-size: 10;"/>
                                 </VBox>
-                            </HBox>
-                            <HBox alignment="CENTER_LEFT" spacing="12" HBox.hgrow="ALWAYS" styleClass="stat-card-new, stat-card-red" style="-fx-background-radius: 8; -fx-padding: 10 15;">
-                                <VBox spacing="2">
-                                    <Label text="LAB QUEUE" styleClass="stat-label" style="-fx-font-size: 10;"/>
-                                    <Label fx:id="lblPendingTests" text="0" styleClass="stat-value" style="-fx-font-size: 20;"/>
-                                </VBox>
-                            </HBox>
-
-                            <HBox alignment="CENTER_LEFT" spacing="12" HBox.hgrow="ALWAYS" styleClass="stat-card-new, stat-card-red" style="-fx-background-radius: 8; -fx-padding: 10 15;">
-                                <VBox spacing="2">
-                                    <Label text="REVENUE" styleClass="stat-label" style="-fx-font-size: 10;"/>
-                                    <HBox alignment="BASELINE_LEFT" spacing="3">
-                                        <Label fx:id="lblRevenue" text="0.00" styleClass="stat-value" style="-fx-font-size: 20;"/>
-                                        <Label text="PKR" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
+                                <!-- SMART DATE FILTER -->
+                                <VBox alignment="CENTER_RIGHT" spacing="5">
+                                    <ComboBox fx:id="filterDateRange" promptText="Select Period" onAction="#handleDateRangeChange"
+                                              prefWidth="160" style="-fx-font-size: 11; -fx-background-color: white; -fx-border-color: #CFD8DC; -fx-border-radius: 4;"/>
+                                    <HBox fx:id="customDateBox" visible="false" managed="false" spacing="5">
+                                        <DatePicker fx:id="filterStartDate" promptText="From" prefWidth="100" style="-fx-font-size: 10;"/>
+                                        <DatePicker fx:id="filterEndDate" promptText="To" prefWidth="100" style="-fx-font-size: 10;"/>
+                                        <Button text="✓" onAction="#handleApplyFilters" style="-fx-background-color: #961111; -fx-text-fill: white; -fx-font-size: 10;"/>
                                     </HBox>
                                 </VBox>
                             </HBox>
-                        </HBox>
-
-                        <!-- Compact Action Header: Search + Gender + Refresh -->
-                        <HBox spacing="15" alignment="CENTER_LEFT" styleClass="card" style="-fx-padding: 10 15; -fx-background-color: white; -fx-background-radius: 8;">
-                            <TextField fx:id="searchPatientField" promptText="Search MR Number or Name..." 
-                                       styleClass="medical-search-bar" prefWidth="300"/>
-                            
-                            <Separator orientation="VERTICAL" prefHeight="20" style="-fx-opacity: 0.3;"/>
-                            
-                            <ComboBox fx:id="filterGender" promptText="Gender" prefWidth="120" onAction="#handleApplyFilters"
-                                      style="-fx-font-size: 11; -fx-background-color: white;"/>
-                            
-                            <Region HBox.hgrow="ALWAYS"/>
-                            
-                            <Button text="📂 CLINICAL REPORT" onAction="#handleOpenReport"
-                        style="-fx-background-color: #961111; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 20; -fx-cursor: hand;"/>
-                        </HBox>
-
+                            <!-- Stat Grid -->
+                            <HBox spacing="15" style="-fx-padding: 0 0 5 0;">
+                                <HBox alignment="CENTER_LEFT" spacing="12" HBox.hgrow="ALWAYS" styleClass="stat-card-new, stat-card-red" style="-fx-background-radius: 8; -fx-padding: 10 15;">
+                                    <VBox spacing="2">
+                                        <Label text="PATIENTS" styleClass="stat-label" style="-fx-font-size: 10;"/>
+                                        <Label fx:id="lblTodayRegistered" text="0" styleClass="stat-value" style="-fx-font-size: 20;"/>
+                                    </VBox>
+                                </HBox>
+                                <HBox alignment="CENTER_LEFT" spacing="12" HBox.hgrow="ALWAYS" styleClass="stat-card-new, stat-card-red" style="-fx-background-radius: 8; -fx-padding: 10 15;">
+                                    <VBox spacing="2">
+                                        <Label text="LAB QUEUE" styleClass="stat-label" style="-fx-font-size: 10;"/>
+                                        <Label fx:id="lblPendingTests" text="0" styleClass="stat-value" style="-fx-font-size: 20;"/>
+                                    </VBox>
+                                </HBox>
+                                <HBox alignment="CENTER_LEFT" spacing="12" HBox.hgrow="ALWAYS" styleClass="stat-card-new, stat-card-red" style="-fx-background-radius: 8; -fx-padding: 10 15;">
+                                    <VBox spacing="2">
+                                        <Label text="REVENUE" styleClass="stat-label" style="-fx-font-size: 10;"/>
+                                        <HBox alignment="BASELINE_LEFT" spacing="3">
+                                            <Label fx:id="lblRevenue" text="0.00" styleClass="stat-value" style="-fx-font-size: 20;"/>
+                                            <Label text="PKR" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
+                                        </HBox>
+                                    </VBox>
+                                </HBox>
+                            </HBox>
+                            <!-- Search Bar -->
+                            <HBox spacing="15" alignment="CENTER_LEFT" styleClass="card" style="-fx-padding: 10 15; -fx-background-color: white; -fx-background-radius: 8;">
+                                <TextField fx:id="searchPatientField" promptText="Search MR Number or Name..." 
+                                           styleClass="medical-search-bar" prefWidth="300"/>
+                                <Separator orientation="VERTICAL" prefHeight="20" style="-fx-opacity: 0.3;"/>
+                                <ComboBox fx:id="filterGender" promptText="Gender" prefWidth="120" onAction="#handleApplyFilters"
+                                          style="-fx-font-size: 11; -fx-background-color: white;"/>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <Button text="📂 CLINICAL REPORT" onAction="#handleOpenReport"
+                                        style="-fx-background-color: #961111; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 20; -fx-cursor: hand;"/>
+                            </HBox>
+                            <!-- Table -->
                             <TableView fx:id="recentTable" VBox.vgrow="ALWAYS" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-overflow-x: hidden;">
                                 <columns>
                                     <TableColumn fx:id="colRecentId"     text="MR NUMBER"    prefWidth="120"/>
@@ -251,7 +216,7 @@
                                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
                                 </columnResizePolicy>
                             </TableView>
-                            
+                            <!-- Pagination Buttons -->
                             <HBox alignment="CENTER_RIGHT" spacing="10">
                                 <Button text="&lt; PREVIOUS" onAction="#handlePrevActivity" styleClass="button-secondary" style="-fx-font-size: 11;"/>
                                 <Button text="NEXT &gt;" onAction="#handleNextActivity" styleClass="button-secondary" style="-fx-font-size: 11;"/>
@@ -261,4 +226,24 @@
                 </ScrollPane>
             </VBox>
         </StackPane>
-</HBox>
+    </HBox>
+
+    <!-- FLOATING SUGGEST & UPDATE OVERLAY -->
+    <AnchorPane fx:id="floatingContainer" pickOnBounds="false">
+        <HBox fx:id="floatingButtonBox" alignment="CENTER_LEFT" spacing="0" 
+              AnchorPane.bottomAnchor="30" AnchorPane.rightAnchor="30"
+              style="-fx-background-color: linear-gradient(to right, #961111, #D32F2F); -fx-background-radius: 25; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 5); -fx-padding: 0 5 0 0; -fx-cursor: move;">
+            
+            <Button text="SUGGEST &amp; UPDATE" onAction="#handleSuggestUpdate"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 11; -fx-padding: 10 20; -fx-cursor: hand;"/>
+            
+            <Separator orientation="VERTICAL" prefHeight="20" style="-fx-opacity: 0.3; -fx-padding: 0 5;"/>
+            
+            <Button text="✕" onAction="#handleCloseFloatingButton"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 10; -fx-padding: 5 8; -fx-cursor: hand;">
+                <tooltip><Tooltip text="Close for this session"/></tooltip>
+            </Button>
+        </HBox>
+    </AnchorPane>
+
+</StackPane>

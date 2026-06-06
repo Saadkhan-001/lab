@@ -153,6 +153,14 @@ public class DashboardController {
     private boolean isDataHidden = false;
 
     @FXML
+    private AnchorPane floatingContainer;
+    @FXML
+    private HBox floatingButtonBox;
+
+    private double xOffset = 0;
+    private double yOffset = 0;
+
+    @FXML
     private void handleToggleVisibility() {
         isDataHidden = !isDataHidden;
         toggleVisibilityBtn.setText(isDataHidden ? "SHOW DATA" : "HIDE DATA");
@@ -395,6 +403,19 @@ public class DashboardController {
                         }
                     }
                 }
+
+                // Floating Button Draggability & Logic
+                if (floatingButtonBox != null) {
+                    floatingButtonBox.setOnMousePressed(event -> {
+                        xOffset = event.getSceneX() - floatingButtonBox.getTranslateX();
+                        yOffset = event.getSceneY() - floatingButtonBox.getTranslateY();
+                    });
+
+                    floatingButtonBox.setOnMouseDragged(event -> {
+                        floatingButtonBox.setTranslateX(event.getSceneX() - xOffset);
+                        floatingButtonBox.setTranslateY(event.getSceneY() - yOffset);
+                    });
+                }
             } catch (Throwable t) {
                 System.err.println("[CRITICAL] Dashboard Background Initialization Error: " + t.getMessage());
                 t.printStackTrace();
@@ -409,6 +430,20 @@ public class DashboardController {
 
                     @Override
                     public void handle(KeyEvent event) {
+                        if (event.isControlDown() && event.getCode().isDigitKey()) {
+                            String digit = event.getCode().getName();
+                            if (digit.endsWith("1")) handleMasterSync();
+                            else if (digit.endsWith("2")) performSwitch("Billing", navBilling);
+                            else if (digit.endsWith("3")) performSwitch("Specimen", navSpecimen);
+                            else if (digit.endsWith("4")) performSwitch("Clinical Lab", navProcessing);
+                            else if (digit.endsWith("5")) performSwitch("Review", navDoctor);
+                            else if (digit.endsWith("6")) performSwitch("History", navHistory);
+                            else if (digit.endsWith("7")) performSwitch("Inventory", null);
+                            else if (digit.endsWith("8")) performSwitch("Settings", navSettings);
+                            event.consume();
+                            return;
+                        }
+
                         if (event.isControlDown() && event.getCode() == KeyCode.N) {
                             com.lab.lms.services.SessionContext.setCurrentPatientId(null);
                             com.lab.lms.services.SessionContext.setCurrentSampleId(null);
@@ -877,14 +912,32 @@ public class DashboardController {
 
     private void openUrl(String url) {
         try {
-            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-                Desktop.getDesktop().browse(new URI(url));
+            if (java.awt.Desktop.isDesktopSupported() && java.awt.Desktop.getDesktop().isSupported(java.awt.Desktop.Action.BROWSE)) {
+                java.awt.Desktop.getDesktop().browse(new java.net.URI(url));
             } else {
+                // Fallback for 32-bit environments or restricted desktops
                 Runtime runtime = Runtime.getRuntime();
                 runtime.exec("rundll32 url.dll,FileProtocolHandler " + url);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("[RESILIENCY] Failed to open URL: " + e.getMessage());
+            // Last resort via HostServices if available
+            if (com.lab.lms.Main.hostServicesInstance != null) {
+                com.lab.lms.Main.hostServicesInstance.showDocument(url);
+            }
+        }
+    }
+
+    @FXML
+    private void handleSuggestUpdate() {
+        openUrl("https://docs.google.com/forms/d/e/1FAIpQLSdLY2v7tOAR0TgkQ3KFxmHjTdUWob7OEh263TS6JvqSHQ7gfg/viewform?usp=sharing&ouid=110153114388754125721");
+    }
+
+    @FXML
+    private void handleCloseFloatingButton() {
+        if (floatingContainer != null) {
+            floatingContainer.setVisible(false);
+            floatingContainer.setManaged(false);
         }
     }
 
@@ -1136,26 +1189,26 @@ public class DashboardController {
             Node node = null;
             if (text.contains("Database") || text.contains("Registry")) {
                 if (!com.lab.lms.services.SessionContext.hasPermission("registration")) return;
-                node = com.lab.lms.services.NavigationService.getView("/fxml/patients.fxml");
+                com.lab.lms.services.NavigationService.switchView("/fxml/patients.fxml");
             } else if (text.contains("Profile")) {
-                node = com.lab.lms.services.NavigationService.getView("/fxml/profile.fxml");
+                com.lab.lms.services.NavigationService.switchView("/fxml/profile.fxml");
             } else if (text.contains("Patient") || text.contains("Registration") || text.contains("New Entry")) {
                 if (!com.lab.lms.services.SessionContext.hasPermission("registration")) return;
-                node = com.lab.lms.services.NavigationService.getView("/fxml/registration.fxml");
+                com.lab.lms.services.NavigationService.switchView("/fxml/registration.fxml");
             } else if (text.contains("Test") || text.contains("Billing")) {
                 if (!com.lab.lms.services.SessionContext.hasPermission("billing")) return;
-                node = com.lab.lms.services.NavigationService.getView("/fxml/billing.fxml");
+                com.lab.lms.services.NavigationService.switchView("/fxml/billing.fxml");
             } else if (text.contains("Specimen") || text.contains("Sample") || text.contains("Collection")) {
                 if (!com.lab.lms.services.SessionContext.hasPermission("processing")) return;
-                node = com.lab.lms.services.NavigationService.getView("/fxml/samples.fxml");
+                com.lab.lms.services.NavigationService.switchView("/fxml/samples.fxml");
             } else if (text.contains("Processing") || text.contains("Clinical")) {
                 if (!com.lab.lms.services.SessionContext.hasPermission("processing")) return;
-                node = com.lab.lms.services.NavigationService.getView("/fxml/processing.fxml");
+                com.lab.lms.services.NavigationService.switchView("/fxml/processing.fxml");
             } else if (text.contains("Review") || text.contains("Doctor")) {
                 if (!com.lab.lms.services.SessionContext.hasPermission("authorization")) return;
-                node = com.lab.lms.services.NavigationService.getView("/fxml/review.fxml");
+                com.lab.lms.services.NavigationService.switchView("/fxml/review.fxml");
             } else if (text.contains("History") || text.contains("Records") || text.contains("Case History")) {
-                node = com.lab.lms.services.NavigationService.getView("/fxml/history.fxml");
+                com.lab.lms.services.NavigationService.switchView("/fxml/history.fxml");
             } else if (text.contains("Settings") || text.contains("Admin") || text.contains("Inventory")) {
                 if (!com.lab.lms.services.SessionContext.hasPermission("configuration")) return;
                 
@@ -1163,14 +1216,12 @@ public class DashboardController {
                     com.lab.lms.services.SessionContext.setTargetTab("inventory");
                 }
                 
-                node = com.lab.lms.services.NavigationService.getView("/fxml/admin.fxml");
+                com.lab.lms.services.NavigationService.switchView("/fxml/admin.fxml");
             } else if (text.contains("Dashboard") || text.contains("Reports") || text.contains("Home")) {
                 if (!com.lab.lms.services.SessionContext.hasPermission("dashboard")) return;
-                node = homeView;
-            }
-
-            if (node != null && contentArea != null) {
-                contentArea.getChildren().setAll(node);
+                if (contentArea != null && homeView != null) {
+                    contentArea.getChildren().setAll(homeView);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1625,6 +1676,30 @@ public class DashboardController {
                     new Alert(AlertType.ERROR, "Import Failed: " + e.getMessage()).show();
                 }
             }
+        }
+    }
+
+    @FXML
+    private void handleMasterSync() {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/fxml/test_seeding.fxml"));
+            javafx.scene.Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Global Clinical Engine Synchronization");
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            
+            // Set icon for sync window
+            try {
+                stage.getIcons().add(new javafx.scene.image.Image(getClass().getResourceAsStream("/images/logo.png")));
+            } catch (Exception e) {}
+            
+            stage.showAndWait();
+            updateStats(); // Refresh dashboard data after synchronization
+        } catch (Exception e) {
+            e.printStackTrace();
+            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR, "Sync Error: " + e.getMessage());
+            alert.show();
         }
     }
 

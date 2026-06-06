@@ -44,7 +44,7 @@ public class RateListController {
         colPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
 
         // Setup filter options
-        filterClassCombo.setItems(FXCollections.observableArrayList("BOTH PROTOCOLS", "ACTIVE ONLY", "INACTIVE ONLY"));
+        filterClassCombo.setItems(FXCollections.observableArrayList("BOTH PROTOCOLS", "ROUTINE ONLY", "PREMIUM ONLY"));
         filterClassCombo.setValue("BOTH PROTOCOLS");
 
         // Add custom cell factory for price to format it nicely
@@ -69,10 +69,10 @@ public class RateListController {
             String filter = filterClassCombo.getValue();
             
             filteredData.setPredicate(test -> {
-                // Class Filter
+                // Class Filter (is_special: 0 = Routine, 1 = Premium)
                 if (filter != null) {
-                    if ("ACTIVE ONLY".equals(filter) && !"ACTIVE".equalsIgnoreCase(test.getProtocolClass())) return false;
-                    if ("INACTIVE ONLY".equals(filter) && !"INACTIVE".equalsIgnoreCase(test.getProtocolClass())) return false;
+                    if ("ROUTINE ONLY".equals(filter) && test.getIsSpecial() != 0) return false;
+                    if ("PREMIUM ONLY".equals(filter) && test.getIsSpecial() != 1) return false;
                 }
                 
                 // Search Filter

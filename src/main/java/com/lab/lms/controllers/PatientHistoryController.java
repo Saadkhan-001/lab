@@ -153,7 +153,7 @@ public class PatientHistoryController {
 
         // Setup History Table
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
-        colSampleId.setCellValueFactory(new PropertyValueFactory<>("patientName"));
+        colSampleId.setCellValueFactory(new PropertyValueFactory<>("sampleId"));
         colTestName.setCellValueFactory(new PropertyValueFactory<>("testName"));
         colTestName.setCellFactory(column -> new TableCell<>() {
             @Override
@@ -266,7 +266,7 @@ public class PatientHistoryController {
                     int idx = getIndex();
                     if (idx < 0 || idx >= getTableView().getItems().size()) return;
                     VisitHistory v = getTableView().getItems().get(idx);
-                    setText(v.getPatientName());
+                    setText(v.getSampleId());
                     setStyle("-fx-font-weight: bold; -fx-text-fill: #2C3E50; -fx-font-size: 11px;");
                 }
             }
@@ -304,13 +304,13 @@ public class PatientHistoryController {
 
         try (Connection conn = DatabaseManager.getConnection()) {
             StringBuilder sql = new StringBuilder(
-                    "SELECT s.collection_date, s.sample_id, t.name as test_name, r.status, r.pdf_path, t.id as test_id, p.name as p_name, p.patient_id, "
+                    "SELECT s.collection_date, s.sample_id, COALESCE(t.name, 'Unknown Test') as test_name, r.status, r.pdf_path, COALESCE(t.id, 0) as test_id, p.name as p_name, p.patient_id, "
                             + "COALESCE(p.whatsapp, p.phone) as contact_phone, s.status as sample_status, MIN(r.doctor_approval) as approval, MAX(r.comment) as result_comment "
                             + "FROM samples s " +
                             "JOIN patients p ON s.patient_id = p.patient_id " +
                             "JOIN results r ON s.sample_id = r.sample_id " +
-                            "JOIN test_parameters tp ON r.parameter_id = tp.id " +
-                            "JOIN tests t ON tp.test_id = t.id ");
+                            "LEFT JOIN test_parameters tp ON r.parameter_id = tp.id " +
+                            "LEFT JOIN tests t ON tp.test_id = t.id ");
 
             if (pid != null && !pid.isEmpty()) {
                 sql.append("WHERE s.patient_id = ? ");

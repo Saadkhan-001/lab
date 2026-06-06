@@ -25,6 +25,7 @@ import java.io.File;
 import java.util.List;
 import java.sql.*;
 import java.util.ArrayList;
+import javafx.stage.Stage;
 
 public class AdminController {
 
@@ -281,6 +282,10 @@ public class AdminController {
         colParamCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
         colParamRange.setCellValueFactory(new PropertyValueFactory<>("disclosure"));
 
+        // Initialize Protocol Class Dropdown
+        testClassBox.setItems(FXCollections.observableArrayList("ROUTINE", "PREMIUM"));
+        testClassBox.setValue("ROUTINE");
+
 
         colParamSelect.setCellValueFactory(f -> f.getValue().selectedProperty());
         
@@ -391,11 +396,20 @@ public class AdminController {
                 toggleBtn.setStyle("-fx-background-color: #455A64; -fx-text-fill: white; -fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 4 10; -fx-cursor: hand;");
                 toggleBtn.setOnAction(event -> {
                     Test test = getTableView().getItems().get(getIndex());
-                    String nextStatus = "ACTIVE".equalsIgnoreCase(test.getProtocolClass()) ? "INACTIVE" : "ACTIVE";
+                    // 0 = Routine (ACTIVE), 1 = Premium (INACTIVE)
+                    int nextSpecial = (test.getIsSpecial() == 1) ? 0 : 1;
+                    String nextClass = (nextSpecial == 1) ? "INACTIVE" : "ACTIVE";
+                    
                     try (Connection conn = DatabaseManager.getConnection();
-                         PreparedStatement pstmt = conn.prepareStatement("UPDATE tests SET protocol_class = ? WHERE id = ?")) {
-                        pstmt.setString(1, nextStatus); pstmt.setInt(2, test.getId()); pstmt.executeUpdate();
-                        test.setProtocolClass(nextStatus); getTableView().refresh();
+                         PreparedStatement pstmt = conn.prepareStatement("UPDATE tests SET is_special = ?, protocol_class = ? WHERE id = ?")) {
+                        pstmt.setInt(1, nextSpecial);
+                        pstmt.setString(2, nextClass);
+                        pstmt.setInt(3, test.getId());
+                        pstmt.executeUpdate();
+                        
+                        test.setIsSpecial(nextSpecial);
+                        test.setProtocolClass(nextClass);
+                        getTableView().refresh();
                     } catch (SQLException e) { e.printStackTrace(); }
                 });
             }
@@ -405,10 +419,10 @@ public class AdminController {
                 if (empty || getIndex() >= getTableView().getItems().size()) { setGraphic(null); }
                 else {
                     Test test = getTableView().getItems().get(getIndex());
-                    if ("ACTIVE".equalsIgnoreCase(test.getProtocolClass())) {
+                    if (test.getIsSpecial() == 0) { // Routine
                         toggleBtn.setText("MARK PREMIUM");
                         toggleBtn.setStyle("-fx-background-color: #455A64; -fx-text-fill: white; -fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 4 10; -fx-cursor: hand;");
-                    } else {
+                    } else { // Premium
                         toggleBtn.setText("MARK ROUTINE");
                         toggleBtn.setStyle("-fx-background-color: #2E7D32; -fx-text-fill: white; -fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 4 10; -fx-cursor: hand;");
                     }
@@ -421,6 +435,20 @@ public class AdminController {
         testTable.setItems(filteredTests);
         testTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) { selectedTest = newVal; populateTestFields(newVal); loadTestInventoryLinks(newVal.getId()); }
+        });
+
+        // HIDDEN DIAGNOSTIC: Master Sync Shortcut (CTRL+1) - Using EventFilter for Tab-Wide Reach
+        javafx.application.Platform.runLater(() -> {
+            if (adminTabPane != null) {
+                adminTabPane.addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, event -> {
+                    if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.DIGIT1) {
+                        if (tabTests != null && tabTests.isSelected()) {
+                            handleMasterSync();
+                            event.consume();
+                        }
+                    }
+                });
+            }
         });
 
         // Test Search
@@ -1000,7 +1028,9 @@ public class AdminController {
         categoryField.setValue(test.getCategory());
         priceField.setText(String.valueOf(test.getPrice()));
         resultTimeField.setText(test.getResultTime());
-        testClassBox.setValue(test.getProtocolClass());
+        // Map Protocol Class to UI Display
+        String uiClass = "INACTIVE".equalsIgnoreCase(test.getProtocolClass()) ? "PREMIUM" : "ROUTINE";
+        testClassBox.setValue(uiClass);
         specimenField.setText(test.getSpecimen());
         isSpecialCheck.setSelected(test.getIsSpecial() == 1);
         isMicroscopicCheck.setSelected(test.getIsMicroscopic() == 1);
@@ -1297,13 +1327,17 @@ public class AdminController {
                     String finalTat = resultTimeField.getText().trim() + " " + tatUnitBox.getValue();
                     pstmt.setString(4, finalTat);
                     pstmt.setString(5, testNotesArea.getHtmlText());
-                    pstmt.setInt(6, isSpecialCheck.isSelected() ? 1 : 0);
                     pstmt.setInt(7, isMicroscopicCheck.isSelected() ? 1 : 0);
                     pstmt.setInt(8, isCultureCheck.isSelected() ? 1 : 0);
                     pstmt.setString(9, specimenField.getText() == null || specimenField.getText().isEmpty() ? "Blood" : specimenField.getText());
                     String imgPath = testImagePathLabel.getText();
                     pstmt.setString(10, "No image attached".equals(imgPath) ? "" : imgPath);
-                    pstmt.setString(11, testClassBox.getValue());
+                    String selectedClass = testClassBox.getValue() != null ? testClassBox.getValue() : "ROUTINE";
+                    int finalIsSpecial = "PREMIUM".equalsIgnoreCase(selectedClass) ? 1 : 0;
+                    String finalProtocolClass = (finalIsSpecial == 1) ? "INACTIVE" : "ACTIVE";
+
+                    pstmt.setInt(6, finalIsSpecial); // is_special
+                    pstmt.setString(11, finalProtocolClass); // protocol_class
                     pstmt.setString(12, numericCodeField.getText());
                     pstmt.setString(13, alphaCodeField.getText());
                     pstmt.executeUpdate();
@@ -1324,13 +1358,15 @@ public class AdminController {
                     String finalTat = resultTimeField.getText().trim() + " " + tatUnitBox.getValue();
                     pstmt.setString(4, finalTat);
                     pstmt.setString(5, testNotesArea.getHtmlText());
-                    pstmt.setInt(6, isSpecialCheck.isSelected() ? 1 : 0);
-                    pstmt.setInt(7, isMicroscopicCheck.isSelected() ? 1 : 0);
-                    pstmt.setInt(8, isCultureCheck.isSelected() ? 1 : 0);
                     pstmt.setString(9, specimenField.getText() == null || specimenField.getText().isEmpty() ? "Blood" : specimenField.getText());
                     String imgPath = testImagePathLabel.getText();
                     pstmt.setString(10, "No image attached".equals(imgPath) ? "" : imgPath);
-                    pstmt.setString(11, testClassBox.getValue());
+                    String selectedClass = testClassBox.getValue() != null ? testClassBox.getValue() : "ROUTINE";
+                    int finalIsSpecial = "PREMIUM".equalsIgnoreCase(selectedClass) ? 1 : 0;
+                    String finalProtocolClass = (finalIsSpecial == 1) ? "INACTIVE" : "ACTIVE";
+
+                    pstmt.setInt(6, finalIsSpecial); // is_special
+                    pstmt.setString(11, finalProtocolClass); // protocol_class
                     pstmt.setString(12, numericCodeField.getText());
                     pstmt.setString(13, alphaCodeField.getText());
                     pstmt.setInt(14, testId);
@@ -1768,27 +1804,22 @@ public class AdminController {
     @FXML
     private void handleMasterSync() {
         try {
-            // 1. Force Refresh Clinical Catalog
-            DatabaseManager.forceSeedDatabase();
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/fxml/test_seeding.fxml"));
+            javafx.scene.Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Global Clinical Engine Synchronization");
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            stage.showAndWait();
             
-            // 2. Refresh UI Data Models
+            // Refresh dashboard data after synchronization
             loadTests();
-            loadStaff();
+            if (isStaffLoaded) loadStaff();
             
-            // 3. System Protocol Refresh (Simulated for vibe)
-            System.out.println("Master Sync: Optimizing internal database indices...");
-            
-            showAlert(Alert.AlertType.INFORMATION, "Master Synchronization Successful", 
-                "The Global Clinical Engine has been force-synchronized.\n\n" +
-                "\u2022 Master Test Repository Refreshed\n" +
-                "\u2022 Staff Records Synchronized\n" +
-                "\u2022 Database Integrity Optimized\n" +
-                "\u2022 Station Metadata Verified");
-                
         } catch (Exception e) {
+            e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Synchronization Critical Failure", 
                 "An error occurred during global synchronization: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -1996,8 +2027,8 @@ public class AdminController {
 
     @FXML
     private void handlePrintRateList() {
-        java.util.List<String> choices = java.util.Arrays.asList("ACTIVE TESTS", "INACTIVE TESTS", "ALL TESTS");
-        ChoiceDialog<String> dialog = new ChoiceDialog<>("ACTIVE TESTS", choices);
+        java.util.List<String> choices = java.util.Arrays.asList("ROUTINE TESTS", "PREMIUM TESTS", "ALL TESTS");
+        ChoiceDialog<String> dialog = new ChoiceDialog<>("ROUTINE TESTS", choices);
         dialog.setTitle("Rate List Generation");
         dialog.setHeaderText("Select Test Categories to Include");
         dialog.setContentText("Show:");
@@ -2005,9 +2036,9 @@ public class AdminController {
         dialog.showAndWait().ifPresent(choice -> {
             try (Connection conn = DatabaseManager.getConnection()) {
                 String sql = "SELECT * FROM tests";
-                if ("ACTIVE TESTS".equals(choice)) {
+                if ("ROUTINE TESTS".equals(choice)) {
                     sql += " WHERE protocol_class = 'ACTIVE'";
-                } else if ("INACTIVE TESTS".equals(choice)) {
+                } else if ("PREMIUM TESTS".equals(choice)) {
                     sql += " WHERE protocol_class = 'INACTIVE'";
                 }
                 
@@ -2065,7 +2096,7 @@ public class AdminController {
         specimenField.clear();
         numericCodeField.clear();
         alphaCodeField.clear();
-        testClassBox.setValue("ACTIVE");
+        testClassBox.setValue("ROUTINE");
         isMicroscopicCheck.setSelected(false);
         isCultureCheck.setSelected(false);
         tempParameters.clear();
@@ -2091,9 +2122,9 @@ public class AdminController {
 
         filteredTests.setPredicate(test -> {
             if (routineOnly) {
-                if (!"ACTIVE".equalsIgnoreCase(test.getProtocolClass())) return false;
+                if (test.getIsSpecial() != 0) return false;
             } else if (premiumOnly) {
-                if (!"INACTIVE".equalsIgnoreCase(test.getProtocolClass())) return false;
+                if (test.getIsSpecial() != 1) return false;
             }
 
             if (query.isEmpty()) return true;
@@ -2466,4 +2497,5 @@ public class AdminController {
             }
         });
     }
+
 }

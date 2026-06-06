@@ -41,7 +41,7 @@
             <!-- Patient Search & Select Integrated -->
             <VBox spacing="4" GridPane.columnIndex="0">
                 <Label text="1. SELECT SUBJECT (NAME / ID / PHONE)" styleClass="section-title" style="-fx-font-size: 9;"/>
-                <HBox spacing="0" style="-fx-background-color: white; -fx-border-color: #CFD8DC; -fx-border-radius: 4;" maxWidth="Infinity">
+                <HBox spacing="0" style="-fx-background-color: #F9F2F2; -fx-border-color: #CFD8DC; -fx-border-radius: 4;" maxWidth="Infinity">
                     <TextField fx:id="patientSearchField" promptText="Search subject..." 
                                style="-fx-border-width: 0; -fx-background-color: transparent;" HBox.hgrow="ALWAYS"/>
                     <ComboBox fx:id="patientSelectCombo" prefWidth="25"
@@ -87,7 +87,7 @@
                    style="-fx-text-fill: #961111; -fx-font-weight: bold; -fx-font-size: 12;"/>
         </HBox>
 
-            <TableView fx:id="historyTable" VBox.vgrow="ALWAYS" style="-fx-background-color: white;">
+            <TableView fx:id="historyTable" VBox.vgrow="ALWAYS" style="-fx-background-color: #F9F2F2;">
                 <columns>
                     <TableColumn fx:id="colSelect"    text="SEL"                  prefWidth="45"
                                  style="-fx-alignment: CENTER;"/>

@@ -1,12 +1,17 @@
 #define AppName "Laboratory Management System"
 #define AppVersion "1.1.0"
 
-; --- DEMO vs NORMAL ---
+; --- DEMO vs NORMAL vs RECOVER ---
 #ifdef DEMO
   #define AppId "{{A1B2C3D4-E5F6-4A5B-9C8D-E7F8G9H0I1J2}"
   #define DefaultDirName "{autopf}\LaboratoryManagementSystem_DEMO"
   #define ModeSuffix "DEMO"
   #define SetupAppName AppName + " (DEMO)"
+#elif defined RECOVER
+  #define AppId "{{C3D4E5F6-A7B8-4C7D-BE0F-F9G0H1I2J3K4}"
+  #define DefaultDirName "{autopf}\LaboratoryManagementSystem_RECOVER"
+  #define ModeSuffix "RECOVER"
+  #define SetupAppName AppName + " (Password Recover)"
 #else
   #define AppId "{{B2C3D4E5-F6A7-4B6C-AD9E-F8G9H0I1J2K3}"
   #define DefaultDirName "{autopf}\LaboratoryManagementSystem"
@@ -80,6 +85,9 @@ Source: "lab_icon.ico"; DestDir: "{app}"; Flags: ignoreversion
 #ifdef DEMO
 Source: "demo.txt"; DestDir: "{app}"; Flags: ignoreversion
 #endif
+#ifdef RECOVER
+Source: "recover.txt"; DestDir: "{app}"; Flags: ignoreversion
+#endif
 
 ; ===========================================================
 ; ICONS / SHORTCUTS
@@ -91,6 +99,9 @@ Source: "demo.txt"; DestDir: "{app}"; Flags: ignoreversion
   #ifdef DEMO
 Name: "{group}\{#SetupAppName}"; Filename: "{app}\LaboratoryManagementSystem.exe"; Parameters: "--demo-mode"
 Name: "{commondesktop}\{#SetupAppName}"; Filename: "{app}\LaboratoryManagementSystem.exe"; Parameters: "--demo-mode"; Tasks: desktopicon
+  #elif defined RECOVER
+Name: "{group}\{#SetupAppName}"; Filename: "{app}\LaboratoryManagementSystem.exe"; Parameters: "--recover-mode"
+Name: "{commondesktop}\{#SetupAppName}"; Filename: "{app}\LaboratoryManagementSystem.exe"; Parameters: "--recover-mode"; Tasks: desktopicon
   #else
 Name: "{group}\{#SetupAppName}"; Filename: "{app}\LaboratoryManagementSystem.exe"
 Name: "{commondesktop}\{#SetupAppName}"; Filename: "{app}\LaboratoryManagementSystem.exe"; Tasks: desktopicon
@@ -99,6 +110,9 @@ Name: "{commondesktop}\{#SetupAppName}"; Filename: "{app}\LaboratoryManagementSy
   #ifdef DEMO
 Name: "{group}\{#SetupAppName}"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --demo-mode"; IconFilename: "{app}\lab_icon.ico"; WorkingDir: "{app}"
 Name: "{commondesktop}\{#SetupAppName}"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --demo-mode"; IconFilename: "{app}\lab_icon.ico"; WorkingDir: "{app}"; Tasks: desktopicon
+  #elif defined RECOVER
+Name: "{group}\{#SetupAppName}"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --recover-mode"; IconFilename: "{app}\lab_icon.ico"; WorkingDir: "{app}"
+Name: "{commondesktop}\{#SetupAppName}"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --recover-mode"; IconFilename: "{app}\lab_icon.ico"; WorkingDir: "{app}"; Tasks: desktopicon
   #else
 Name: "{group}\{#SetupAppName}"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"""; IconFilename: "{app}\lab_icon.ico"; WorkingDir: "{app}"
 Name: "{commondesktop}\{#SetupAppName}"; Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"""; IconFilename: "{app}\lab_icon.ico"; WorkingDir: "{app}"; Tasks: desktopicon
@@ -112,12 +126,16 @@ Name: "{commondesktop}\{#SetupAppName}"; Filename: "wscript.exe"; Parameters: ""
 #ifdef BIT64
   #ifdef DEMO
 Filename: "{app}\LaboratoryManagementSystem.exe"; Parameters: "--demo-mode"; Description: "{cm:LaunchProgram,{#SetupAppName}}"; Flags: nowait postinstall
+  #elif defined RECOVER
+Filename: "{app}\LaboratoryManagementSystem.exe"; Parameters: "--recover-mode"; Description: "{cm:LaunchProgram,{#SetupAppName}}"; Flags: nowait postinstall
   #else
 Filename: "{app}\LaboratoryManagementSystem.exe"; Description: "{cm:LaunchProgram,{#SetupAppName}}"; Flags: nowait postinstall
   #endif
 #else
   #ifdef DEMO
 Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --demo-mode"; WorkingDir: "{app}"; Description: "{cm:LaunchProgram,{#SetupAppName}}"; Flags: nowait postinstall runhidden
+  #elif defined RECOVER
+Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"" --recover-mode"; WorkingDir: "{app}"; Description: "{cm:LaunchProgram,{#SetupAppName}}"; Flags: nowait postinstall runhidden
   #else
 Filename: "wscript.exe"; Parameters: """{app}\launch.vbs"""; WorkingDir: "{app}"; Description: "{cm:LaunchProgram,{#SetupAppName}}"; Flags: nowait postinstall runhidden
   #endif

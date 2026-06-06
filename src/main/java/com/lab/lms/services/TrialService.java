@@ -6,7 +6,15 @@ import java.time.temporal.ChronoUnit;
 
 public class TrialService {
     private static final int TRIAL_DAYS = 10;
+    private static boolean recoverMode = false;
 
+    public static void setRecover(boolean recover) {
+        recoverMode = recover;
+    }
+
+    public static boolean isRecover() {
+        return recoverMode;
+    }
 
     public static void setDemo(boolean demo) {
         DatabaseManager.saveSetting("is_demo", String.valueOf(demo));

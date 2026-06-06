@@ -47,7 +47,8 @@ public class Test {
         this.isCulture = isCulture;
         this.specimen = specimen;
         this.imagePath = imagePath;
-        this.protocolClass = protocolClass == null ? "ACTIVE" : protocolClass;
+        // Sync protocolClass with isSpecial for legacy/UI compatibility: 0 = Routine (ACTIVE), 1 = Premium (INACTIVE)
+        this.protocolClass = (isSpecial == 1) ? "INACTIVE" : "ACTIVE";
         this.container = container;
         this.volume = volume;
         this.fasting = fasting;
